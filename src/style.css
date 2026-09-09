@@ -1,0 +1,73 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'ALS Sirius';
+  src: url('/fonts/ALS_Sirius_Regular_0.95.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+};
+
+@font-face {
+  font-family: 'ALS Sirius';
+  src: url('/fonts/ALS_Sirius_Bold_0.95.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+};
+
+@theme {
+  --color-green: #28be46;
+  --color-blue: #6573ff;
+  --color-red: #ff4460;
+  --color-yellow: #ffb600;
+
+  --color-globe: #f4f4f4;
+  --color-island: #d9fee0;
+
+  --color-primary-hover: #48e868;
+  --color-primary-active: #19a235;
+
+  --color-accent-hover: #ffd52f;
+  --color-accent-active: #eba800;
+
+  --font-sirius: 'ALS Sirius', sans-serif;
+  --default-font-family: var(--font-sirius);
+
+  --text-xs: 12px;
+  --text-xs--line-height: 16px;
+  --text-xs--letter-spacing: 0.06em;
+
+  --text-base: 16px;
+  --text-base--line-height: 20px;
+  --text-base--letter-spacing: 0.02em;
+
+  --text-xl: 20px;
+  --text-xl--line-height: 24px;
+
+  --text-2xl: 24px;
+  --text-2xl--line-height: 28px;
+
+  --text-3xl: 32px;
+  --text-3xl--line-height: 36px;
+  --text-3xl--letter-spacing: -0.01em;
+
+  --text-4xl: 42px;
+  --text-4xl--line-height: 40px;
+  --text-4xl--letter-spacing: -0.04em;
+
+  --text-6xl: 64px;
+  --text-6xl--line-height: 60px;
+  --text-6xl--letter-spacing: -0.04em;
+
+  --drop-shadow-medium-default: 0 8px 10px rgb(0 0 0 / 0.07);
+  --drop-shadow-medium-hover: 0 10px 20px rgb(0 0 0 / 0.07);
+  --drop-shadow-small-default: 0 6px 10px rgb(0 0 0 / 0.07);
+  --drop-shadow-small-hover: 0 8px 20px rgb(0 0 0 / 0.07);
+};
+
+@layer base {
+  h1, h2, h3, h4, h5 {
+    font-weight: 700;
+  };
+};
