@@ -114,3 +114,7 @@
     justify-content: flex-start;
     align-items: flex-end;
 }
+
+@utility bg-hero {
+    background-image: url('./assets/Hero.png');
+}
