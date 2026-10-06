@@ -40,7 +40,7 @@ function SimpleButton({ variant = 'primary', size = 'md', type = 'button',
   return (
     <button type={type} className={classes} {...rest}>
       {leftIcon ? <span>{leftIcon}</span> : null}
-      {children}
+      <span className="justify-start text-white text-xl font-bold font-['ALS_Sirius'] leading-6 tracking-wide">{children}</span>
       {rightIcon ? <span>{rightIcon}</span> : null}
     </button>
   );
