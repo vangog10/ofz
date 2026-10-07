@@ -25,8 +25,18 @@ const styles = {
 const sizes = {
   sm: `h-8 gap-2 px-[8px]`,
   md: `h-[44px] gap-2 px-[10px]`,
-  lg: ``
+  lg: `h-[52px] gap-2 px-6`
 };
+
+/** Кегль подписи по размеру кнопки: 16 / 20 / 24 */
+const labelSizes: Record<ButtonSize, string> = {
+  sm: `text-base`,
+  md: `text-xl`,
+  lg: `text-2xl`
+};
+
+/** Подпись наследует цвет варианта: иначе secondary/accent остаются белыми на белом */
+const labelBase = `justify-start font-['ALS_Sirius'] font-bold leading-6 tracking-wide`;
 
 function buildButtonClasses(variant: ButtonVariant, size: ButtonSize, className?: string): string {
   return [base, styles[variant], sizes[size], className].filter(Boolean).join(' ');
@@ -40,7 +50,7 @@ function SimpleButton({ variant = 'primary', size = 'md', type = 'button',
   return (
     <button type={type} className={classes} {...rest}>
       {leftIcon ? <span>{leftIcon}</span> : null}
-      <span className="justify-start text-white text-xl font-bold font-['ALS_Sirius'] leading-6 tracking-wide">{children}</span>
+      <span className={`${labelBase} ${labelSizes[size]}`}>{children}</span>
       {rightIcon ? <span>{rightIcon}</span> : null}
     </button>
   );

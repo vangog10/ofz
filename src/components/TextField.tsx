@@ -8,6 +8,9 @@ import type { InputSize } from '../interfaces/primitives.type';
 
 const base = `flex layout-l w-full gap-2`;
 
+/** Корень поля: подпись + рамка + подсказка столбиком, ширина — по контейнеру */
+const rootBase = `flex w-full min-w-0 flex-col gap-1`;
+
 const sizes: Record<InputSize, string> = {
   md: `h-11 pl-[10px] pr-2`,
   lg: ``, // TODO: размер lg ещё не нарисован — заглушка
@@ -18,7 +21,7 @@ const inputBase = `w-full min-w-0 bg-transparent outline-none`;
 const clearBase = `shrink-0 layout-c rounded-sm cursor-pointer outline-none
                    focus-visible:ring-1 focus-visible:ring-green`;
 
-function TextField({ label, hint, size = 'md', state = 'default', clearable = true, onClear,
+function TextField({ label, hint = "", size = 'md', state = 'default', clearable = true, onClear,
   iconSize = 24, disabled = false, id, className, value, defaultValue, onChange, ...rest }: TextFieldProps) {
 
   const innerId = useId();
@@ -78,7 +81,7 @@ function TextField({ label, hint, size = 'md', state = 'default', clearable = tr
   }
 
   return (
-    <div className="flex w-full flex-col gap-1">
+    <div className={rootBase}>
       {label ? <label htmlFor={fieldId} className={labelClasses}>{label}</label> : null}
       <div className={wrapperClasses}>
         <input id={fieldId} ref={inputRef} disabled={disabled} value={currentValue}

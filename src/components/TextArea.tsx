@@ -12,11 +12,14 @@ const sizes: Record<InputSize, string> = {
   lg: ``, // TODO: размер lg ещё не нарисован — заглушка
 };
 
+/** Корень поля: подпись + рамка + подсказка столбиком, ширина — по контейнеру */
+const rootBase = `flex w-full min-w-0 flex-col gap-1`;
+
 /** Строка текста = 24px (в макете подпись «1 строка — 44px» относится к однострочному полю) */
 const textareaBase = `w-full min-h-0 flex-1 resize-none bg-transparent outline-none leading-6`;
 
-function TextArea({ label, hint, size = 'md', state = 'default', submitLabel = 'Отправить',
-  onSubmit, disabled = false, id, className, value, defaultValue, onChange, ...rest }: TextAreaProps) {
+function TextArea({ label, hint, size = 'md', state = 'default', submitLabel,
+  onSubmit, disabled = false, fill = false, id, className, value, defaultValue, onChange, ...rest }: TextAreaProps) {
 
   const innerId = useId();
   const fieldId = id ?? innerId;
@@ -26,10 +29,16 @@ function TextArea({ label, hint, size = 'md', state = 'default', submitLabel = '
   const isControlled = value !== undefined;
   const currentValue = isControlled ? String(value) : innerValue;
 
+  /** fill: корень и рамка тянутся на свободную высоту колонки, textarea забирает её целиком */
+  const grow = fill ? `grow` : ``;
+
+  const rootClasses = [rootBase, grow].filter(Boolean).join(' ');
+
   const wrapperClasses = [
     fieldBase,
     base,
     sizes[size],
+    grow,
     disabled ? fieldDisabled : `${fieldStates[state]} cursor-text`,
     className,
   ].filter(Boolean).join(' ');
@@ -43,7 +52,7 @@ function TextArea({ label, hint, size = 'md', state = 'default', submitLabel = '
   }
 
   return (
-    <div className="flex w-full flex-col gap-1">
+    <div className={rootClasses}>
       {label ? <label htmlFor={fieldId} className={labelClasses}>{label}</label> : null}
       <div className={wrapperClasses}>
         <textarea id={fieldId} disabled={disabled} value={currentValue}
@@ -51,10 +60,12 @@ function TextArea({ label, hint, size = 'md', state = 'default', submitLabel = '
           aria-describedby={hint ? hintId : undefined}
           className={`${textareaClasses} placeholder:text-black/35`}
           {...rest} />
-        <SimpleButton size="sm" variant="primary" disabled={disabled} onClick={onSubmit}
-          className="shrink-0 self-end">
-          <span className="font-sirius text-base tracking-normal">{submitLabel}</span>
-        </SimpleButton>
+        {submitLabel
+          ? <SimpleButton size="sm" variant="primary" disabled={disabled} onClick={onSubmit}
+              className="shrink-0 self-end">
+              <span className="font-sirius text-base tracking-normal">{submitLabel}</span>
+            </SimpleButton>
+          : null}
       </div>
       {hint
         ? <span id={hintId} className={`${fieldTextBase} ${state === 'error' ? `text-red` : `text-black/60`}`}>

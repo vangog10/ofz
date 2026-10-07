@@ -10,10 +10,12 @@ export interface TextArea extends Omit<TextareaHTMLAttributes<HTMLTextAreaElemen
     size?: InputSize,
     /** Визуальное состояние: default | error | success */
     state?: FieldState,
-    /** Текст кнопки отправки */
+    /** Текст кнопки отправки; если не указан — кнопка внутри поля не рендерится */
     submitLabel?: ReactNode,
     /** Клик по кнопке отправки */
     onSubmit?: () => void,
+    /** Растягивать поле по высоте колонки: свободная высота уходит в textarea, но не ниже size */
+    fill?: boolean,
     /** Классы рамки поля (textarea вместе с кнопкой) */
     className?: string
 };

@@ -18,7 +18,8 @@ const fieldStates: Record<FieldState, string> = {
 
 const fieldDisabled = `border-black/20 cursor-not-allowed`;
 
-const labelBase = `font-sirius text-base font-bold tracking-normal`;
+/** Подпись над полем: 20/24, иначе браузерный интерлиньяж раздувает шапку поля */
+const labelBase = `font-sirius text-xl font-bold leading-6 tracking-normal`;
 
 /** Текст поля и подсказки: 12px без трекинга, как в макете */
 const fieldTextBase = `font-sirius text-xs tracking-normal`;

@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+html {
+  scroll-behavior: smooth;
+}
+
 @font-face {
   font-family: 'ALS Sirius';
   src: url('./fonts/ALS_Sirius_Regular_0.95.ttf') format('truetype');
@@ -117,4 +121,19 @@
 
 @utility bg-hero {
     background-image: url('./assets/Hero.png');
+}
+
+/* Пунктирная рамка по параметрам из Figma — Stroke: weight 1.5, dash 4, gap 4,
+   position inside, flat cap. У border-dashed шаг штриха задать нельзя, поэтому
+   рамка рисуется четырьмя повторяющимися градиентами внутри бокса.
+   Цвет берётся из currentColor: на элементе задаётся классами text-*. */
+@utility dashed-inset {
+    background-image:
+        repeating-linear-gradient(to right, currentColor 0 4px, transparent 4px 8px),
+        repeating-linear-gradient(to right, currentColor 0 4px, transparent 4px 8px),
+        repeating-linear-gradient(to bottom, currentColor 0 4px, transparent 4px 8px),
+        repeating-linear-gradient(to bottom, currentColor 0 4px, transparent 4px 8px);
+    background-size: 100% 1.5px, 100% 1.5px, 1.5px 100%, 1.5px 100%;
+    background-position: 0 0, 0 100%, 0 0, 100% 0;
+    background-repeat: no-repeat;
 }
