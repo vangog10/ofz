@@ -1,11 +1,11 @@
-import tpuLogo from "../assets/TPU_black.logo.png"
+import tpuLogo from "../assets/TPU_footer.svg"
 
 function AppFooter() {
     return (
         <div className="flex flex-col gap-6 p-16 bg-[#1e1e1e]">
             <div className="flex justify-between">
                 <img src={tpuLogo} alt="Томский политехнический университет" />
-                <div className="flex flex-col gap-6">
+                <div className="flex gap-4">
                     <div className="flex flex-col gap-2">
                         <div className="justify-start text-white text-xl font-bold font-['ALS_Sirius'] leading-6 tracking-wide">Контакты</div>
                         <div className="justify-start text-white/60 text-base font-normal font-['ALS_Sirius'] leading-5 tracking-tight">+7 (3822) 701-777</div>
