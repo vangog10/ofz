@@ -1,3 +1,5 @@
+import { useState } from "react"
+import type { ChangeEvent, FormEvent } from "react"
 import AppFooter from "./AppFooter"
 import AppHeader from "./AppHeader"
 import Callout from "./Callout"
@@ -15,15 +17,76 @@ import yandexLogo from "../assets/Yandex_logo_Cyrillic 1.png"
 import rosatomLogo from "../assets/rosatom-logo-eng 1.png"
 import tbankLogo from "../assets/t-bank-full 1.png"
 import peopleImg from "../assets/Rectangle.png"
+import { applyPhoneMask, isPhoneFilled, PHONE_MAX_LENGTH } from "../utils/phone"
+import type { FieldState } from "../interfaces/primitives.type"
+
+/** Поля анкеты, которые проверяются при отправке */
+type FormField = 'name' | 'organization' | 'email' | 'phone' | 'task'
+
+/** Лимиты длины полей анкеты */
+const NAME_MAX_LENGTH = 100
+const ORGANIZATION_MAX_LENGTH = 100
+const EMAIL_MAX_LENGTH = 50
+
+const emptyForm: Record<FormField, string> = {
+  name: '',
+  organization: '',
+  email: '',
+  phone: '',
+  task: '',
+}
 
 function App() {
+  const [values, setValues] = useState(emptyForm)
+  const [errors, setErrors] = useState<Partial<Record<FormField, boolean>>>({})
+  const [consent, setConsent] = useState(false)
+  const [consentError, setConsentError] = useState(false)
+
+  /** Пустое поле получает состояние error — рамка и текст краснеют */
+  function fieldState(field: FormField): FieldState {
+    return errors[field] ? 'error' : 'default'
+  }
+
+  function updateField(field: FormField, value: string) {
+    setValues((prev) => ({ ...prev, [field]: value }))
+    // ошибка снимается, как только поле начали исправлять
+    setErrors((prev) => (prev[field] ? { ...prev, [field]: false } : prev))
+  }
+
+  function handlePhoneChange(event: ChangeEvent<HTMLInputElement>) {
+    updateField('phone', applyPhoneMask(event.target.value, values.phone))
+  }
+
+  function handleConsentChange(event: ChangeEvent<HTMLInputElement>) {
+    setConsent(event.target.checked)
+    if (event.target.checked) setConsentError(false)
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    const nextErrors: Record<FormField, boolean> = {
+      name: values.name.trim() === '',
+      organization: values.organization.trim() === '',
+      email: values.email.trim() === '',
+      phone: !isPhoneFilled(values.phone),
+      task: values.task.trim() === '',
+    }
+
+    setErrors(nextErrors)
+    setConsentError(!consent)
+
+    if (Object.values(nextErrors).some(Boolean) || !consent) return
+
+    // TODO: отправка заявки на бэкенд
+  }
+
   return (
     <>
-      <header className="fixed w-full">
+      <header className="w-full">
         <AppHeader />
       </header>
       <main>
-        <div className="w-full h-24"></div>
         <div
           id="image"
           className="bg-hero bg-cover bg-center bg-no-repeat self-stretch h-[960px] px-16 py-8"
@@ -53,7 +116,7 @@ function App() {
         <div className="self-stretch p-16 bg-zinc-100 flex layout-c gap-6 overflow-hidden">
           <CardItem icon={<Tune size={48} color="#28be46"/>} title="Гибкие форматы" text="от разовых исследований до долгосрочных R&D-проектов."/>
           <CardItem icon={<SchoolHat size={48} color="#28be46"/>} title="Академическая валидация" text="ваши идеи проходят экспертную оценку."/>
-          <CardItem icon={<AccountGroup size={48} color="#28be46"/>} title="Доступ к таланта" text="студенты, аспиранты под руководством научных руководителей."/>
+          <CardItem icon={<AccountGroup size={48} color="#28be46"/>} title="Доступ к талантам" text="студенты, аспиранты под руководством научных руководителей."/>
           <CardItem icon={<TimerPlay size={48} color="#28be46"/>} title="Скорость запуска" text="старт проекта в течение 2 недель."/>
         </div>
 
@@ -112,15 +175,32 @@ function App() {
         <div id="form" className="grid grid-cols-[2fr_3fr] gap-x-20 gap-y-6 p-16">
           <div className="col-start-1 row-start-1 justify-start text-black text-3xl font-bold font-['ALS_Sirius'] leading-9">Заполните анкету</div>
           <img src={peopleImg} alt="Студенты и научный руководитель обсуждают проект" className="col-start-1 row-start-2 self-start w-full h-auto"/>
-          <form className="col-start-2 row-start-2 flex flex-col gap-6">
+          {/* noValidate: проверяем сами, чтобы браузер не блокировал отправку
+              нативными подсказками (например, у поля type="email") */}
+          <form className="col-start-2 row-start-2 flex flex-col gap-6" noValidate onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-              <TextField label="Как вас зовут?" name="name" autoComplete="name" placeholder="Иванов Иван"/>
-              <TextField label="Название организации" name="organization" placeholder='ООО "Ромашка"'/>
-              <TextField label="E-mail" name="email" type="email" autoComplete="email" placeholder="ivanov_ivan@mail.ru"/>
-              <TextField label="Телефон" name="phone" type="tel" autoComplete="tel" placeholder="+7 (999) 000-00-00"/>
+              <TextField label="Как вас зовут?" name="name" autoComplete="name" placeholder="Иванов Иван"
+                maxLength={NAME_MAX_LENGTH} required state={fieldState('name')}
+                value={values.name} onChange={(event) => updateField('name', event.target.value)}
+                onClear={() => updateField('name', '')}/>
+              <TextField label="Название организации" name="organization" placeholder='ООО "Ромашка"'
+                maxLength={ORGANIZATION_MAX_LENGTH} required state={fieldState('organization')}
+                value={values.organization} onChange={(event) => updateField('organization', event.target.value)}
+                onClear={() => updateField('organization', '')}/>
+              <TextField label="E-mail" name="email" type="email" autoComplete="email" placeholder="ivanov_ivan@mail.ru"
+                maxLength={EMAIL_MAX_LENGTH} required state={fieldState('email')}
+                value={values.email} onChange={(event) => updateField('email', event.target.value)}
+                onClear={() => updateField('email', '')}/>
+              {/* maxLength — 15 символов номера без «+» вместе с дефисами маски */}
+              <TextField label="Телефон" name="phone" type="tel" autoComplete="tel" placeholder="+7-999-000-00-00"
+                maxLength={PHONE_MAX_LENGTH} required state={fieldState('phone')}
+                value={values.phone} onChange={handlePhoneChange}
+                onClear={() => updateField('phone', '')}/>
             </div>
 
-            <TextArea label="Описание задачи" name="task" placeholder="Опишите задачу..." fill/>
+            <TextArea label="Описание задачи" name="task" placeholder="Опишите задачу..." fill
+              required state={fieldState('task')}
+              value={values.task} onChange={(event) => updateField('task', event.target.value)}/>
 
             <div className="flex flex-col gap-4">
               <div className="flex layout-l w-full gap-4 rounded-sm dashed-inset border-green text-green/40 px-4 py-3">
@@ -134,9 +214,12 @@ function App() {
               </div>
             </div>
 
-            <CheckBox name="consent">Я согласен на обработку персональных данных</CheckBox>
+            <CheckBox name="consent" state={consentError ? 'error' : 'default'}
+              checked={consent} onChange={handleConsentChange}>
+              Я согласен на обработку персональных данных
+            </CheckBox>
 
-            <SimpleButton type="submit" size="lg" className="self-end">Отправить заявку</SimpleButton>
+            <SimpleButton type="submit" size="lg" className="self-end">Отправить</SimpleButton>
           </form>
         </div>
       </main>

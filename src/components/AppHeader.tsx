@@ -5,7 +5,9 @@ function AppHeader() {
     return (
         <div className="w-full h-24 px-16 py-5 bg-white shadow-[0px_15px_18px_1px_rgba(0,0,0,0.07)] flex justify-between items-center">
             <div className="size- flex justify-start items-center gap-3">
-                <img src={tpuLogo} alt="Томский политехнический университет" className="h-12 w-auto" />
+                <a href="https://tpu.ru/">
+                    <img src={tpuLogo} alt="Томский политехнический университет" className="h-12 w-auto" />
+                </a>
             </div>
             <div className="h-14 flex justify-start items-center gap-8">
                 <div className="size- inline-flex flex-col justify-start items-end">
