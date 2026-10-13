@@ -19,16 +19,11 @@ import tbankLogo from "../assets/t-bank-full 1.png"
 import peopleImg from "../assets/Rectangle.png"
 import rubius from "../assets/Ribius_Logo 1.png"
 import sibur from "../assets/Group 1.png"
-import { applyPhoneMask, isPhoneFilled, PHONE_MAX_LENGTH } from "../utils/phone"
+import { EMAIL_MAX_LENGTH, NAME_MAX_LENGTH, ORGANIZATION_MAX_LENGTH, PHONE_MAX_LENGTH } from "../constants"
+import { applyPhoneMask, isPhoneFilled } from "../utils/phone"
 import type { FieldState } from "../interfaces/primitives.type"
 
-/** Поля анкеты, которые проверяются при отправке */
 type FormField = 'name' | 'organization' | 'email' | 'phone' | 'task'
-
-/** Лимиты длины полей анкеты */
-const NAME_MAX_LENGTH = 100
-const ORGANIZATION_MAX_LENGTH = 100
-const EMAIL_MAX_LENGTH = 50
 
 const emptyForm: Record<FormField, string> = {
   name: '',
@@ -43,17 +38,14 @@ function App() {
   const [errors, setErrors] = useState<Partial<Record<FormField, boolean>>>({})
   const [consent, setConsent] = useState(false)
   const [consentError, setConsentError] = useState(false)
-  /** Файлы дропзоны: список ведёт форма, чтобы отправить его вместе с анкетой */
   const [files, setFiles] = useState<File[]>([])
 
-  /** Пустое поле получает состояние error — рамка и текст краснеют */
   function fieldState(field: FormField): FieldState {
     return errors[field] ? 'error' : 'default'
   }
 
   function updateField(field: FormField, value: string) {
     setValues((prev) => ({ ...prev, [field]: value }))
-    // ошибка снимается, как только поле начали исправлять
     setErrors((prev) => (prev[field] ? { ...prev, [field]: false } : prev))
   }
 
@@ -82,7 +74,6 @@ function App() {
 
     if (Object.values(nextErrors).some(Boolean) || !consent) return
 
-    // TODO: отправка заявки на бэкенд — поля анкеты, согласие и загруженные files
   }
 
   return (
@@ -106,9 +97,6 @@ function App() {
 
         <div className="self-stretch h-96 w-full p-16 bg-white inline-flex flex-col justify-center items-center gap-6 overflow-hidden">
           <div className="layout-b text-black/40 text-xl font-bold font-['ALS_Sirius'] leading-6 tracking-wide">Уже работают с нашими студентами</div>
-          {/* 1312px = ширина ряда карточек (4 × 310 + 3 × 24) = контент макета 1440 без p-16.
-              Логотипы держат природные 80px, поэтому на широком экране ряд ломается: ограничиваем
-              его шириной ряда карточек и центрируем. */}
           <div className="self-center h-40 w-full max-w-[1312px] items-center justify-between flex">
             <img src={yandexLogo} alt="Яндекс" className="h-20 w-auto" />
             <img src={rosatomLogo} alt="Росатом" className="h-20 w-auto" />
@@ -131,8 +119,6 @@ function App() {
 
         <div className="flex flex-col gap-12 p-16 bg-white border-t border-b border-[#e1e2e6]">
           <div className="self-stretch text-center justify-start text-black/40 text-2xl font-bold font-['ALS_Sirius'] leading-7">Как это работает?</div>
-          {/* Ширина 1440-макета без p-16: колонки стоят на месте, а на широком экране
-              растут только боковые отступы (mx-auto). */}
           <div className="mx-auto w-full max-w-[1312px] grid grid-cols-2 gap-6">
             <div className="size-lf-stretch p-6 inline-flex justify-start items-center gap-4">
               <div className="justify-start text-green-500 text-8xl font-bold font-['ALS_Sirius'] leading-25">1</div>
@@ -177,14 +163,9 @@ function App() {
         </div>
 
 
-        {/* Заголовок, картинка и форма — три грид-элемента. Заголовок занимает отдельную
-            строку, поэтому форма начинается ровно от верха картинки и растягивается
-            по её высоте: высоту строки задаёт картинка в колонке 2fr. */}
         <div id="form" className="grid grid-cols-[2fr_3fr] gap-x-20 gap-y-6 p-16">
           <div className="col-start-1 row-start-1 justify-start text-black text-3xl font-bold font-['ALS_Sirius'] leading-9">Заполните анкету</div>
           <img src={peopleImg} alt="Студенты и научный руководитель обсуждают проект" className="col-start-1 row-start-2 self-start w-full h-auto"/>
-          {/* noValidate: проверяем сами, чтобы браузер не блокировал отправку
-              нативными подсказками (например, у поля type="email") */}
           <form className="col-start-2 row-start-2 flex flex-col gap-6" noValidate onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-x-8 gap-y-4">
               <TextField label="Как вас зовут?" name="name" autoComplete="name" placeholder="Иванов Иван"
@@ -210,7 +191,6 @@ function App() {
               required state={fieldState('task')}
               value={values.task} onChange={(event) => updateField('task', event.target.value)}/>
 
-            {/* Файлы не обязательны для заявки, поэтому дропзона вне проверки при отправке */}
             <FileDropzone files={files} onFilesChange={setFiles} />
 
             <CheckBox name="consent" state={consentError ? 'error' : 'default'}

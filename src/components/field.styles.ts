@@ -1,9 +1,7 @@
 import type { FieldState } from '../interfaces/primitives.type';
 
-/** Общая рамка поля: инпут или textarea */
 const fieldBase = `rounded-sm border bg-transparent transition-colors duration-150`;
 
-/** Рамка по состояниям: фокус — рамка + ring 1px, визуально 2px без сдвига контента */
 const fieldStates: Record<FieldState, string> = {
   default: `border-black/40
             hover:border-black/60
@@ -18,10 +16,8 @@ const fieldStates: Record<FieldState, string> = {
 
 const fieldDisabled = `border-black/20 cursor-not-allowed`;
 
-/** Подпись над полем: 20/24, иначе браузерный интерлиньяж раздувает шапку поля */
 const labelBase = `font-sirius text-xl font-bold leading-6 tracking-normal`;
 
-/** Текст поля и подсказки: 12px без трекинга, как в макете */
 const fieldTextBase = `font-sirius text-xs tracking-normal`;
 
 export { fieldBase, fieldStates, fieldDisabled, labelBase, fieldTextBase };

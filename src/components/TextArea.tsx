@@ -9,13 +9,11 @@ const base = `flex flex-col w-full gap-2`;
 
 const sizes: Record<InputSize, string> = {
   md: `min-h-[164px] p-[10px]`,
-  lg: ``, // TODO: размер lg ещё не нарисован — заглушка
+  lg: ``, 
 };
 
-/** Корень поля: подпись + рамка + подсказка столбиком, ширина — по контейнеру */
 const rootBase = `flex w-full min-w-0 flex-col gap-1`;
 
-/** Строка текста = 24px (в макете подпись «1 строка — 44px» относится к однострочному полю) */
 const textareaBase = `w-full min-h-0 flex-1 resize-none bg-transparent outline-none leading-6`;
 
 function TextArea({ label, hint, size = 'md', state = 'default', submitLabel,
@@ -29,7 +27,6 @@ function TextArea({ label, hint, size = 'md', state = 'default', submitLabel,
   const isControlled = value !== undefined;
   const currentValue = isControlled ? String(value) : innerValue;
 
-  /** fill: корень и рамка тянутся на свободную высоту колонки, textarea забирает её целиком */
   const grow = fill ? `grow` : ``;
 
   const rootClasses = [rootBase, grow].filter(Boolean).join(' ');

@@ -4,15 +4,12 @@ import Check from './icons/Check.icon';
 import FileDocumentPlus from './icons/FileDocumentPlus.icon';
 import FileDocumentRemove from './icons/FileDocumentRemove.icon';
 import SendVariant from './icons/SendVariant.icon';
-import { MAX_FILE_SIZE, formatFileSize, sumFileSize } from '../utils/files';
+import { formatFileSize, sumFileSize } from '../utils/files';
+import { MAX_FILE_SIZE, STUB_UPLOAD_TIME } from '../constants';
 import type { FileDropzone as FileDropzoneProps, FileUploadError } from '../interfaces/fileDropzone.interface';
 import type { FileUploadState } from '../interfaces/primitives.type';
 import type { SVG } from '../interfaces/SVG.interface';
 
-/** Пауза заглушки отправки: без неё состояние process мелькало бы быстрее, чем читается глазом */
-const STUB_UPLOAD_TIME = 800;
-
-/** Иконка состояния: плюс — ждём файл, стрелка — отправляем, галочка — загружено, крест — ошибка */
 const stateIcons: Record<FileUploadState, ComponentType<SVG>> = {
   default: FileDocumentPlus,
   process: SendVariant,
@@ -20,11 +17,8 @@ const stateIcons: Record<FileUploadState, ComponentType<SVG>> = {
   error: FileDocumentRemove,
 };
 
-/** Раскладка «иконка + текст» одна на все состояния, отличается только рамка с фоном */
 const base = `flex layout-l w-full gap-4 rounded-sm px-4 py-3 transition-colors duration-150 outline-none`;
 
-/** Рамка и фон по состояниям макета: default и process — пунктир внутри бокса (dashed-inset,
- *  цвет берётся из currentColor), success и error — сплошная рамка 1.5px */
 const boxes: Record<FileUploadState, string> = {
   default: `dashed-inset bg-globe text-black/40 hover:text-black/60`,
   process: `dashed-inset bg-white text-green`,
@@ -32,7 +26,6 @@ const boxes: Record<FileUploadState, string> = {
   error: `border-[1.5px] border-red bg-red/10`,
 };
 
-/** Цвет иконки состояния */
 const iconColors: Record<FileUploadState, string> = {
   default: `text-black/60`,
   process: `text-black/60`,
@@ -40,8 +33,6 @@ const iconColors: Record<FileUploadState, string> = {
   error: `text-red`,
 };
 
-/** Заглушка отправки: файлы читаются в память и выдерживается пауза.
- *  TODO: заменить на реальный запрос — fetch('/api/upload', { method: 'POST', body: formData }) */
 async function uploadStub(files: File[]): Promise<void> {
   await Promise.all(files.map((file) => file.arrayBuffer()));
   await new Promise((resolve) => setTimeout(resolve, STUB_UPLOAD_TIME));
@@ -55,10 +46,7 @@ function FileDropzone({ accept, multiple = true, maxSize = MAX_FILE_SIZE, iconSi
   const textId = `${fieldId}-text`;
 
   const inputRef = useRef<HTMLInputElement>(null);
-  /** Счётчик dragenter/dragleave: события приходят и от вложенных элементов, поэтому подсветку
-   *  снимаем только когда курсор ушёл из коробки целиком */
   const dragDepth = useRef(0);
-  /** Номер последней загрузки: ответы устаревших запросов не должны менять состояние */
   const requestId = useRef(0);
 
   const [innerFiles, setInnerFiles] = useState<File[]>(defaultFiles ?? []);
@@ -66,15 +54,12 @@ function FileDropzone({ accept, multiple = true, maxSize = MAX_FILE_SIZE, iconSi
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
 
-  /** files — контролируемое значение: тогда список хранит форма, а дропзона только сообщает об изменениях */
   const isControlled = files !== undefined;
   const uploaded = files ?? innerFiles;
 
-  /** state из props перекрывает внутреннее состояние — так показывается любой из четырёх видов макета */
   const currentState: FileUploadState = state
     ?? (uploading ? 'process' : failure ? 'error' : uploaded.length > 0 ? 'success' : 'default');
   const isBusy = currentState === 'process';
-  /** Пока идёт отправка или поле выключено, зона не принимает файлы и не открывает диалог */
   const isInteractive = !disabled && !isBusy;
 
   // Ответ отправки после размонтирования уже не нужен
@@ -97,12 +82,10 @@ function FileDropzone({ accept, multiple = true, maxSize = MAX_FILE_SIZE, iconSi
 
   function openDialog() {
     if (!isInteractive) return;
-    // значение сбрасывается заранее: иначе повторный выбор того же файла не вызовет change
     if (inputRef.current) inputRef.current.value = '';
     inputRef.current?.click();
   }
 
-  /** Проверка размера → отправка → success; слишком большой файл или сбой отправки → error */
   async function startUpload(picked: File[]) {
     if (picked.length === 0) return;
 
@@ -124,7 +107,6 @@ function FileDropzone({ accept, multiple = true, maxSize = MAX_FILE_SIZE, iconSi
     try {
       await (upload ?? uploadStub)(picked);
       if (requestId.current !== request) return;
-      // новая порция заменяет предыдущую: в макете нет списка файлов и кнопки удаления
       commitFiles(picked);
     } catch {
       if (requestId.current !== request) return;
@@ -149,7 +131,6 @@ function FileDropzone({ accept, multiple = true, maxSize = MAX_FILE_SIZE, iconSi
   }
 
   function handleClick(event: MouseEvent<HTMLDivElement>) {
-    // программный click по input всплывает в корень: без проверки openDialog вызвался бы заново
     if (event.target === inputRef.current) return;
     openDialog();
   }
@@ -172,7 +153,6 @@ function FileDropzone({ accept, multiple = true, maxSize = MAX_FILE_SIZE, iconSi
   }
 
   function handleDragOver(event: DragEvent<HTMLDivElement>) {
-    // без preventDefault браузер откроет перетаскиваемый файл вместо того, чтобы отдать его drop
     event.preventDefault();
     if (isInteractive) event.dataTransfer.dropEffect = 'copy';
   }
@@ -215,7 +195,6 @@ function FileDropzone({ accept, multiple = true, maxSize = MAX_FILE_SIZE, iconSi
         <Icon size={iconSize} />
       </span>
 
-      {/* aria-live: смена заголовка и подписи — единственный сигнал о результате загрузки */}
       <span className="flex min-w-0 flex-col" aria-live="polite">
         <span id={titleId} className="justify-start text-black text-xl font-bold leading-6">{title}</span>
         <span id={textId} className={`text-base leading-5 ${currentState === 'error' ? `text-red` : `text-black/40`}`}>
@@ -223,8 +202,6 @@ function FileDropzone({ accept, multiple = true, maxSize = MAX_FILE_SIZE, iconSi
         </span>
       </span>
 
-      {/* input спрятан: диалог открывает сама дропзона, а input остаётся точкой подключения
-          нативного поведения выбора файлов (accept, multiple) */}
       <input ref={inputRef} type="file" className="sr-only" tabIndex={-1}
         accept={accept} multiple={multiple} disabled={disabled}
         onChange={handleInputChange} />

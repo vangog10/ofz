@@ -8,12 +8,11 @@ import type { InputSize } from '../interfaces/primitives.type';
 
 const base = `flex layout-l w-full gap-2`;
 
-/** Корень поля: подпись + рамка + подсказка столбиком, ширина — по контейнеру */
 const rootBase = `flex w-full min-w-0 flex-col gap-1`;
 
 const sizes: Record<InputSize, string> = {
   md: `h-11 pl-[10px] pr-2`,
-  lg: ``, // TODO: размер lg ещё не нарисован — заглушка
+  lg: ``,
 };
 
 const inputBase = `w-full min-w-0 bg-transparent outline-none`;
@@ -57,7 +56,6 @@ function TextField({ label, hint = "", size = 'md', state = 'default', clearable
   }
 
   function renderIcon() {
-    // по макету иконка есть только у состояний added (очистка) и success (галочка)
     if (disabled || state === 'error') return null;
 
     if (state === 'success') {

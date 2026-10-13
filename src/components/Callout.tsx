@@ -3,19 +3,15 @@ import { animated, useReducedMotion, useSpring } from 'react-spring'
 import type { CalloutProps } from '../interfaces/callout.interface'
 import ShevronRight from './icons/ShevronRight'
 
-/** Раскрытие контейнера: затухание близко к критическому, чтобы пружина не «перелетала» высоту ответа */
 const panelConfig = { tension: 250, friction: 30 }
 
-/** Шеврон поворачивается чуть живее — с небольшим отскоком на 90° */
 const chevronConfig = { tension: 300, friction: 22 }
 
 function Callout({ title, children }: CalloutProps) {
   const [open, setOpen] = useState(false)
   const panelId = useId()
-  /** null, пока настройка системы не прочитана, — трактуем как «анимация разрешена» */
   const reducedMotion = useReducedMotion() === true
 
-  /** Высота ответа зависит от переносов строк, поэтому её измеряем, а не задаём константой */
   const contentRef = useRef<HTMLDivElement>(null)
   const [contentHeight, setContentHeight] = useState(0)
 
@@ -26,7 +22,6 @@ function Callout({ title, children }: CalloutProps) {
     const measure = () => setContentHeight(node.offsetHeight)
     measure()
 
-    // Пересчитываем высоту при смене текста и перевороте строк на узком экране
     if (typeof ResizeObserver === 'undefined') return
     const observer = new ResizeObserver(measure)
     observer.observe(node)
@@ -61,8 +56,6 @@ function Callout({ title, children }: CalloutProps) {
         </animated.span>
       </button>
 
-      {/* Панель ответа: высота и прозрачность ведут пружины, контент обрезается по её краю.
-          Отбивка сверху — внутренний padding, иначе он остался бы и в свёрнутом виде. */}
       <animated.div
         id={panelId}
         aria-hidden={!open}

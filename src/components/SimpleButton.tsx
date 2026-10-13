@@ -28,14 +28,12 @@ const sizes = {
   lg: `h-[52px] gap-2 px-6`
 };
 
-/** Кегль подписи по размеру кнопки: 16 / 20 / 24 */
 const labelSizes: Record<ButtonSize, string> = {
   sm: `text-base`,
   md: `text-xl`,
   lg: `text-2xl`
 };
 
-/** Подпись наследует цвет варианта: иначе secondary/accent остаются белыми на белом */
 const labelBase = `justify-start font-['ALS_Sirius'] font-bold leading-6 tracking-wide`;
 
 function buildButtonClasses(variant: ButtonVariant, size: ButtonSize, className?: string): string {
