@@ -6,6 +6,7 @@ import Callout from "./Callout"
 import CardItem from "./CardItem"
 import CheckBox from "./CheckBox"
 import FileDropzone from "./FileDropzone"
+import Modal from "./Modal"
 import SimpleButton from "./SimpleButton"
 import TextArea from "./TextArea"
 import TextField from "./TextField"
@@ -20,32 +21,43 @@ import peopleImg from "../assets/Rectangle.png"
 import rubius from "../assets/Ribius_Logo 1.png"
 import sibur from "../assets/Group 1.png"
 import { EMAIL_MAX_LENGTH, NAME_MAX_LENGTH, ORGANIZATION_MAX_LENGTH, PHONE_MAX_LENGTH } from "../constants"
+import useFormStore from "../stores/form.store"
 import { applyPhoneMask, isPhoneFilled } from "../utils/phone"
-import type { FieldState } from "../interfaces/primitives.type"
+import type { FieldState, ModalState, SubmitStatus } from "../interfaces/primitives.type"
+import type { FormField } from "../interfaces/form.interface"
 
-type FormField = 'name' | 'organization' | 'email' | 'phone' | 'task'
-
-const emptyForm: Record<FormField, string> = {
-  name: '',
-  organization: '',
-  email: '',
-  phone: '',
-  task: '',
+/** Состояние отправки → вид модального окна */
+function modalStateOf(status: SubmitStatus): ModalState {
+  if (status === 'pending') return 'process'
+  if (status === 'error') return 'error'
+  return 'success'
 }
 
 function App() {
-  const [values, setValues] = useState(emptyForm)
+  // Данные анкеты живут в сторе: там же сохраняется и отправленная заявка
+  const values = useFormStore((state) => state.values)
+  const consent = useFormStore((state) => state.consent)
+  const files = useFormStore((state) => state.files)
+  const status = useFormStore((state) => state.status)
+  const error = useFormStore((state) => state.error)
+  const setField = useFormStore((state) => state.setField)
+  const setConsent = useFormStore((state) => state.setConsent)
+  const setFiles = useFormStore((state) => state.setFiles)
+  const submit = useFormStore((state) => state.submit)
+  const dismiss = useFormStore((state) => state.dismiss)
+
+  // Подсветка ошибок — состояние интерфейса, в сторе ему делать нечего
   const [errors, setErrors] = useState<Partial<Record<FormField, boolean>>>({})
-  const [consent, setConsent] = useState(false)
   const [consentError, setConsentError] = useState(false)
-  const [files, setFiles] = useState<File[]>([])
+
+  const isSending = status === 'pending'
 
   function fieldState(field: FormField): FieldState {
     return errors[field] ? 'error' : 'default'
   }
 
   function updateField(field: FormField, value: string) {
-    setValues((prev) => ({ ...prev, [field]: value }))
+    setField(field, value)
     setErrors((prev) => (prev[field] ? { ...prev, [field]: false } : prev))
   }
 
@@ -72,8 +84,11 @@ function App() {
     setErrors(nextErrors)
     setConsentError(!consent)
 
+    // Пока обязательные поля не заполнены, заявка никуда не уходит
     if (Object.values(nextErrors).some(Boolean) || !consent) return
 
+    // Стор собирает файлы в base64, сохраняет заявку и шлёт POST-запрос
+    void submit()
   }
 
   return (
@@ -198,13 +213,18 @@ function App() {
               Я согласен на обработку персональных данных
             </CheckBox>
 
-            <SimpleButton type="submit" size="lg" className="self-end">Отправить</SimpleButton>
+            <SimpleButton type="submit" size="lg" className="self-end" disabled={isSending}>
+              {isSending ? 'Отправляем…' : 'Отправить'}
+            </SimpleButton>
           </form>
         </div>
       </main>
       <footer>
         <AppFooter />
       </footer>
+
+      <Modal open={status !== 'idle'} state={modalStateOf(status)} errorText={error ?? undefined}
+        onClose={dismiss} />
     </>
   )
 }

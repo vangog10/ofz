@@ -11,6 +11,8 @@ const MAX_FILE_SIZE = 20 * 1024 * 1024;
 const UNITS = ['B', 'KB', 'MB', 'GB'] as const;
 const STUB_UPLOAD_TIME = 800;
 
+const FORM_SUBMIT_URL = 'https://api.example.com/v1/applications';
+
 export {
   NAME_MAX_LENGTH,
   ORGANIZATION_MAX_LENGTH,
@@ -22,4 +24,5 @@ export {
   MAX_FILE_SIZE,
   UNITS,
   STUB_UPLOAD_TIME,
+  FORM_SUBMIT_URL,
 };
