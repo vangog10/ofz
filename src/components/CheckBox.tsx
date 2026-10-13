@@ -21,6 +21,11 @@ function buildIconClasses(checked: boolean, disabled: boolean, isError: boolean)
   return `${iconBase} ${checked ? styles.checked : styles.unchecked}`;
 }
 
+/** Глиф 16×16 нарисован по центру кадра 48×48 (см. CheckBox.icon/CheckBoxChecked.icon),
+    поэтому видимый квадрат отстоит от края кадра на 15/48 своей величины. Сдвигаем иконку
+    на этот внутренний отступ — край квадрата встаёт на левый край блока, как у полей формы. */
+const glyphInset = (iconSize: number) => (iconSize * 15) / 48;
+
 function CheckBox({ checked, defaultChecked = false, onChange, disabled = false, state = 'default',
   iconSize = 48, className, children, ...rest }: Checkbox) {
 
@@ -41,7 +46,8 @@ function CheckBox({ checked, defaultChecked = false, onChange, disabled = false,
     <label className={labelClasses}>
       <input type="checkbox" className="sr-only" checked={isChecked}
         disabled={disabled} onChange={handleChange} aria-invalid={isError || undefined} {...rest} />
-      <span className={buildIconClasses(isChecked, disabled, isError)} aria-hidden="true">
+      <span className={buildIconClasses(isChecked, disabled, isError)}
+        style={{ marginLeft: -glyphInset(iconSize) }} aria-hidden="true">
         {isChecked
           ? <CheckBoxCheckedIcon size={iconSize} />
           : <CheckBoxIcon size={iconSize} />}
