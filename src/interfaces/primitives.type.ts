@@ -13,11 +13,15 @@ type InputSize = md | lg;
 
 type FieldState = 'default' | 'error' | 'success';
 
+/** Состояния дропзоны: default — ждём файл, process — отправляем, success — отправлено, error — не удалось */
+type FileUploadState = 'default' | 'process' | 'success' | 'error';
+
 export type {
     primary, secondary, tertiary, accent,
     sm, md, lg,
     ButtonVariant,
     ButtonSize,
     InputSize,
-    FieldState
+    FieldState,
+    FileUploadState
 };

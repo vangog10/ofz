@@ -5,18 +5,20 @@ import AppHeader from "./AppHeader"
 import Callout from "./Callout"
 import CardItem from "./CardItem"
 import CheckBox from "./CheckBox"
+import FileDropzone from "./FileDropzone"
 import SimpleButton from "./SimpleButton"
 import TextArea from "./TextArea"
 import TextField from "./TextField"
 import AccountGroup from "./icons/AccountGroup.icon"
 import SchoolHat from "./icons/SchoolHat.icon"
-import SendVariant from "./icons/SendVariant.icon"
 import TimerPlay from "./icons/TimerPlay.icon"
 import Tune from "./icons/Tune.icon"
 import yandexLogo from "../assets/Yandex_logo_Cyrillic 1.png"
 import rosatomLogo from "../assets/rosatom-logo-eng 1.png"
 import tbankLogo from "../assets/t-bank-full 1.png"
 import peopleImg from "../assets/Rectangle.png"
+import rubius from "../assets/Ribius_Logo 1.png"
+import sibur from "../assets/Group 1.png"
 import { applyPhoneMask, isPhoneFilled, PHONE_MAX_LENGTH } from "../utils/phone"
 import type { FieldState } from "../interfaces/primitives.type"
 
@@ -41,6 +43,8 @@ function App() {
   const [errors, setErrors] = useState<Partial<Record<FormField, boolean>>>({})
   const [consent, setConsent] = useState(false)
   const [consentError, setConsentError] = useState(false)
+  /** Файлы дропзоны: список ведёт форма, чтобы отправить его вместе с анкетой */
+  const [files, setFiles] = useState<File[]>([])
 
   /** Пустое поле получает состояние error — рамка и текст краснеют */
   function fieldState(field: FormField): FieldState {
@@ -78,7 +82,7 @@ function App() {
 
     if (Object.values(nextErrors).some(Boolean) || !consent) return
 
-    // TODO: отправка заявки на бэкенд
+    // TODO: отправка заявки на бэкенд — поля анкеты, согласие и загруженные files
   }
 
   return (
@@ -109,6 +113,10 @@ function App() {
             <img src={yandexLogo} alt="Яндекс" className="h-20 w-auto" />
             <img src={rosatomLogo} alt="Росатом" className="h-20 w-auto" />
             <img src={tbankLogo} alt="Т-Банк" className="h-20 w-auto" />
+          </div>
+          <div className="w-190 flex items-center justify-between">
+            <img src={rubius} alt="Rubius" />
+            <img src={sibur} alt="Сибур" />
           </div>
         </div>
 
@@ -202,17 +210,8 @@ function App() {
               required state={fieldState('task')}
               value={values.task} onChange={(event) => updateField('task', event.target.value)}/>
 
-            <div className="flex flex-col gap-4">
-              <div className="flex layout-l w-full gap-4 rounded-sm dashed-inset border-green text-green/40 px-4 py-3">
-                <span className="inline-flex shrink-0 text-black/60" aria-hidden="true">
-                  <SendVariant size={28}/>
-                </span>
-                <div className="flex min-w-0 flex-col">
-                  <span className="justify-start text-black text-xl font-bold font-['ALS_Sirius'] leading-6">Загружаем файлы</span>
-                  <span className="justify-start text-black/40 text-base font-normal font-['ALS_Sirius'] leading-5">Максимальный размер: 20 MB</span>
-                </div>
-              </div>
-            </div>
+            {/* Файлы не обязательны для заявки, поэтому дропзона вне проверки при отправке */}
+            <FileDropzone files={files} onFilesChange={setFiles} />
 
             <CheckBox name="consent" state={consentError ? 'error' : 'default'}
               checked={consent} onChange={handleConsentChange}>
