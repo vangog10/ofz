@@ -42,7 +42,7 @@ export default function FloatingCard({ card, index, className }: Props) {
       }}
     >
       <div
-        className="glass-float will-change-transform flex items-center gap-2.5 rounded-2xl border border-white/15 bg-white/10 py-2 pr-4 pl-3 shadow-[0_12px_32px_-16px_rgba(0,0,0,0.7)] backdrop-blur-md"
+        className="glass-float will-change-transform flex items-center gap-2.5 rounded-2xl border border-white/15 bg-white/10 py-2 pr-4 pl-3 shadow-[0_12px_32px_-16px_rgba(0,0,0,0.7)]"
         style={floatStyle}
       >
         <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-500 text-white shadow-md shadow-brand-500/30">
