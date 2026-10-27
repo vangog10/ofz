@@ -25,6 +25,21 @@ npm run preview  # проверка собранной версии
 
 Адрес сайта: `https://<owner>.github.io/ofz/` (у нас — `https://vangog10.github.io/ofz/`).
 
+### Если деплой падает с «Branch "…" is not allowed to deploy to github-pages»
+
+GitHub сам создаёт для Pages окружение `github-pages` и по умолчанию разрешает
+деплой только из ветки по умолчанию (`master`). Пуш из любой другой ветки —
+например, `v2` — режется правилом защиты окружения, и job `deploy` даже не
+стартует.
+
+Разрешить ветку: **Settings → Environments → `github-pages` → Deployment branches
+and tags → No restrictions** (или «Selected branches» и добавить `v2`). После
+этого код менять не нужно — достаточно перезапустить упавший запуск:
+**Actions → Deploy to GitHub Pages → Re-run all jobs**.
+
+Если публиковать нужно только с основной ветки — оставьте в `deploy.yml`
+`branches: [master]` и вливайте изменения туда.
+
 Префикс пути `/ofz/` сборка берёт из переменной окружения `GITHUB_REPOSITORY`
 (см. `vite.config.ts`), поэтому локальные `npm run dev` и `npm run preview`
 работают от корня. Если появится свой домен или user-site `<owner>.github.io`,

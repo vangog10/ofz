@@ -50,6 +50,10 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    # Окружение github-pages создаёт GitHub. У него есть правило «деплой только
+    # из ветки по умолчанию»: если пушить из другой ветки, job упадёт с
+    # «Branch "..." is not allowed to deploy to github-pages». Ветки разрешаются
+    # в Settings → Environments → github-pages → Deployment branches and tags.
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
