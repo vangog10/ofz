@@ -1,7 +1,27 @@
 @import "tailwindcss";
 
+/* Фирменная гарнитура. Файлы лежат в src/assets/fonts — Vite сам переименует
+   их с хешем и положит рядом с бандлом. var-версии нет, поэтому два начертания:
+   400 и 700; всё промежуточное браузер возьмёт из них (500 → Regular,
+   600/800 → Bold), без синтезированного жирного. */
+@font-face {
+  font-family: "ALS Sirius";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/ALS_Sirius_Regular_0.95.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "ALS Sirius";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/fonts/ALS_Sirius_Bold_0.95.ttf") format("truetype");
+}
+
 @theme {
-  --font-sans: "Manrope Variable", ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "ALS Sirius", ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   --color-brand-50: #effcf2;
   --color-brand-100: #d7f7df;
@@ -29,6 +49,17 @@
     -webkit-tap-highlight-color: transparent;
     /* Не даём pull-to-refresh дёргать страницу: сверху тёмный hero. */
     overscroll-behavior-y: none;
+  }
+  /*
+   * Укрупнённый масштаб на десктопе: весь макет построен на rem,
+   * поэтому +5% к корневому размеру = +5% ко всем отступам, шрифтам
+   * и контейнерам (max-w-7xl = 80rem тоже растёт).
+   * Проценты (а не фиксированные px) — уважаем пользовательский размер шрифта.
+   */
+  @media (min-width: 1024px) {
+    html {
+      font-size: 105%;
+    }
   }
   body {
     @apply bg-white font-sans text-ink antialiased;

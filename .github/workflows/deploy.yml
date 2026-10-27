@@ -1,0 +1,59 @@
+# Сборка Vite-приложения и публикация на GitHub Pages.
+# Деплой идёт артефактом: папку dist коммитить в репозиторий не нужно.
+name: Deploy to GitHub Pages
+
+on:
+  # Ветки, пуш в которые публикует сайт. Добавьте/уберите свою.
+  push:
+    branches: [master, v2]
+  # Кнопка «Run workflow» во вкладке Actions.
+  workflow_dispatch:
+
+# Минимальные права: чтение кода, запись в Pages и OIDC-токен для деплоя.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Параллельные запуски не должны перетирать деплой друг друга.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

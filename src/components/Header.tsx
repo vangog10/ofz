@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { animated, useReducedMotion, useSpring } from "@react-spring/web";
-import TpuLogo from "./TpuLogo";
+import tpuLogo from "../assets/logos/TPU.logo.svg";
 import PrimaryButton from "./PrimaryButton";
-import { springGentle } from "../utils/springs";
+import { springGentle } from "../constants";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -56,8 +56,17 @@ export default function Header() {
         style={pillStyle}
         className="mx-auto flex max-w-7xl items-center justify-between gap-4 rounded-2xl border px-4 py-2.5 backdrop-blur-xl sm:px-6"
       >
-        <a href="#top" aria-label="Томский политехнический университет — на главную">
-          <TpuLogo />
+        <a
+          href="https://tpu.ru/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Томский политехнический университет — перейти на tpu.ru"
+        >
+          <img
+            src={tpuLogo}
+            alt="Томский политехнический университет"
+            className="h-8 w-auto sm:h-10"
+          />
         </a>
 
         <div className="flex items-center gap-3 sm:gap-8">

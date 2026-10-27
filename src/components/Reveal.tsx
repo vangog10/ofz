@@ -2,24 +2,14 @@ import type { CSSProperties, ReactNode } from "react";
 import { animated, useReducedMotion, useSpring } from "@react-spring/web";
 import { useInView } from "../hooks/useInView";
 import { cn } from "../utils/cn";
-import { springGentle } from "../utils/springs";
-
-type Direction = "up" | "down" | "left" | "right" | "none" | "zoom";
-
-const offset: Record<Direction, { x?: string; y?: string; scale?: number }> = {
-  up: { y: "2.5rem" },
-  down: { y: "-2.5rem" },
-  left: { x: "3rem" },
-  right: { x: "-3rem" },
-  none: {},
-  zoom: { scale: 0.96 },
-};
+import { REVEAL_OFFSETS, springGentle } from "../constants";
+import type { RevealDirection } from "../interfaces/primitives.types";
 
 type Props = {
   children: ReactNode;
   className?: string;
   delay?: number;
-  direction?: Direction;
+  direction?: RevealDirection;
   style?: CSSProperties;
 };
 
@@ -27,7 +17,7 @@ type Props = {
 export default function Reveal({ children, className, delay = 0, direction = "up", style }: Props) {
   const [ref, inView] = useInView<HTMLDivElement>();
   const reduce = useReducedMotion() === true;
-  const hidden = offset[direction];
+  const hidden = REVEAL_OFFSETS[direction];
   const from = reduce
     ? { opacity: 0, x: 0, y: 0, scale: 1 }
     : { opacity: 0, x: hidden.x ?? 0, y: hidden.y ?? 0, scale: hidden.scale ?? 1 };

@@ -1,330 +1,22 @@
 import { useRef, useState } from "react";
-import type { ChangeEvent, DragEvent, FormEvent, ReactNode, RefObject } from "react";
-import {
-  animated,
-  easings,
-  to as combine,
-  useReducedMotion,
-  useSpring,
-} from "@react-spring/web";
-import teamImg from "../assets/team.png";
+import type { ChangeEvent, DragEvent, FormEvent, RefObject } from "react";
+import type { Errors, SubmitStatus } from "../interfaces/primitives.types";
+import type FormState from "../interfaces/formState.interface";
+import type UploadItem from "../interfaces/uploadItem.interface";
+import { animated, useReducedMotion, useSpring } from "@react-spring/web";
+import { Check, FilePlus } from "lucide-react";
 import Reveal from "./Reveal";
 import PrimaryButton from "./PrimaryButton";
-import {
-  AlertIcon,
-  CheckIcon,
-  FilePlusIcon,
-  FileIcon,
-  FileXIcon,
-  RetryIcon,
-  SpinnerIcon,
-} from "./Icons";
+import Field from "./Field";
+import FieldError from "./FieldError";
+import ButtonLabel from "./ButtonLabel";
+import TeamPhoto from "./TeamPhoto";
+import FileItem from "./FileItem";
+import SuccessBanner from "./SuccessBanner";
 import { cn } from "../utils/cn";
-import { springCine } from "../utils/springs";
-import { useHoverCapable } from "../hooks/useHoverCapable";
-
-const MAX_FILES = 5;
-const MAX_FILE_KB = 1.2 * 1024;
-
-type FileStatus = "error" | "done" | "loading";
-
-type UploadItem = {
-  id: number;
-  name: string;
-  type: string;
-  sizeKb: number;
-  status: FileStatus;
-  error?: string;
-  retryable?: boolean;
-  /** Реальный File — попадает в FormData при отправке. */
-  file?: File;
-};
-
-type SubmitStatus = "idle" | "sending" | "success";
-
-type FormState = {
-  name: string;
-  org: string;
-  email: string;
-  phone: string;
-  task: string;
-  consent: boolean;
-};
-
-const EMPTY_FORM: FormState = { name: "", org: "", email: "", phone: "", task: "", consent: false };
-
-type FieldName = keyof FormState;
-type Errors = Partial<Record<FieldName, string>>;
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const PHONE_RE = /^\+?[\d\s()-]{10,18}$/;
-
-const TYPE_LABELS: Record<string, string> = {
-  xlsx: "Таблица Excel",
-  xls: "Таблица Excel",
-  csv: "Таблица CSV",
-  png: "Изображение PNG",
-  jpg: "Изображение JPG",
-  jpeg: "Изображение JPG",
-  pdf: "Документ PDF",
-  doc: "Документ Word",
-  docx: "Документ Word",
-  ppt: "Презентация",
-  pptx: "Презентация",
-  zip: "Архив ZIP",
-};
-
-const fmtNum = (n: number) => String(n).replace(".", ",");
-
-function formatSize(kb: number) {
-  if (kb >= 1024) return `${fmtNum(Math.round((kb / 1024) * 10) / 10)} MB`;
-  return `${fmtNum(Math.round(kb * 10) / 10)} KB`;
-}
-
-function plural(n: number, one: string, few: string, many: string) {
-  const m10 = n % 10;
-  const m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return one;
-  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
-  return many;
-}
-
-function validate(form: FormState): Errors {
-  const e: Errors = {};
-  if (!form.name.trim()) e.name = "Укажите имя";
-  else if (form.name.trim().length < 2) e.name = "Слишком короткое имя";
-  if (!form.email.trim()) e.email = "Укажите e-mail";
-  else if (!EMAIL_RE.test(form.email.trim())) e.email = "Похоже, в адресе ошибка";
-  if (form.phone.trim() && !PHONE_RE.test(form.phone.trim())) e.phone = "Проверьте номер телефона";
-  if (!form.task.trim()) e.task = "Опишите задачу";
-  else if (form.task.trim().length < 10) e.task = "Добавьте чуть больше деталей";
-  if (!form.consent) e.consent = "Нужно согласие на обработку данных";
-  return e;
-}
-
-function Field({
-  label,
-  error,
-  children,
-  className,
-}: {
-  label: string;
-  error?: string;
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={cn("block", className)}>
-      <label className="block">
-        <span className="mb-2 block text-[15px] font-extrabold">{label}</span>
-        {children}
-      </label>
-      {error && <FieldError message={error} />}
-    </div>
-  );
-}
-
-/** Ошибка поля: появляется пружиной, не ломая вёрстку. */
-function FieldError({ message }: { message: string }) {
-  const reduce = useReducedMotion() === true;
-  const style = useSpring({
-    from: { opacity: 0, y: -4 },
-    to: { opacity: 1, y: 0 },
-    config: { mass: 1, tension: 400, friction: 26 },
-    immediate: reduce,
-  });
-  return (
-    <animated.p role="alert" style={style} className="mt-1.5 text-xs font-semibold text-red-500">
-      {message}
-    </animated.p>
-  );
-}
-
-function Spinner({ className }: { className?: string }) {
-  const reduce = useReducedMotion() === true;
-  const spin = useSpring({
-    from: { rotate: 0 },
-    to: { rotate: 360 },
-    loop: true,
-    config: { duration: 900, easing: easings.linear },
-    immediate: reduce,
-  });
-  return (
-    <animated.span style={{ rotate: spin.rotate }} className={cn("inline-flex", className)}>
-      <SpinnerIcon className="h-5 w-5" />
-    </animated.span>
-  );
-}
-
-/** Подпись кнопки отправки: меняется по key и «попадает» при каждой смене. */
-function ButtonLabel({ status }: { status: SubmitStatus }) {
-  const reduce = useReducedMotion() === true;
-  const style = useSpring({
-    from: { opacity: 0, y: 8 },
-    to: { opacity: 1, y: 0 },
-    config: { mass: 1, tension: 380, friction: 26 },
-    immediate: reduce,
-  });
-  return (
-    <animated.span style={style} className="inline-flex items-center gap-2">
-      {status === "sending" && <Spinner />}
-      {status === "success" && <CheckIcon className="h-5 w-5" />}
-      {status === "idle" ? "Отправить" : status === "sending" ? "Отправляем…" : "Отправлено"}
-    </animated.span>
-  );
-}
-
-/** Фото команды: чистая карточка без выступающих рамок, мягкий зум на пружине. */
-function TeamPhoto() {
-  const reduce = useReducedMotion() === true;
-  const hoverable = useHoverCapable();
-  const [spring, api] = useSpring(() => ({ scale: 1, config: springCine }));
-  return (
-    <div
-      className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-neutral-200 shadow-[0_2px_4px_rgba(11,13,12,0.06),0_32px_64px_-24px_rgba(11,13,12,0.3)]"
-      onPointerEnter={() => !reduce && hoverable && api.start({ scale: 1.05 })}
-      onPointerLeave={() => !reduce && api.start({ scale: 1 })}
-    >
-      <animated.img
-        src={teamImg}
-        alt="Студенты обсуждают проект у монитора"
-        loading="lazy"
-        style={{ scale: spring.scale }}
-        className="h-full w-full object-cover"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
-    </div>
-  );
-}
-
-function FileItem({
-  file,
-  onRetry,
-  onRemove,
-}: {
-  file: UploadItem;
-  onRetry: () => void;
-  onRemove: () => void;
-}) {
-  const reduce = useReducedMotion() === true;
-
-  const popStyle = useSpring({
-    from: { opacity: 0, y: 6, scale: 0.92 },
-    to: { opacity: 1, y: 0, scale: 1 },
-    config: { mass: 0.9, tension: 400, friction: 22 },
-    immediate: reduce,
-  });
-  const shimmer = useSpring({
-    from: { x: -100 },
-    to: { x: 250 },
-    loop: true,
-    config: { duration: 1300, easing: easings.linear },
-    immediate: reduce,
-  });
-
-  return (
-    <animated.li
-      style={{
-        opacity: popStyle.opacity,
-        transform: combine([popStyle.y, popStyle.scale], (y, s) => `translate3d(0, ${y}px, 0) scale(${s})`),
-      }}
-      className={cn(
-        "relative flex items-center gap-3 overflow-hidden rounded-xl px-3 py-3 transition-colors duration-200",
-        file.status === "error" && "bg-red-50"
-      )}
-    >
-      <span
-        className={cn(
-          "hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg sm:flex",
-          file.status === "error" ? "bg-red-100 text-red-500" : "bg-neutral-100 text-neutral-500"
-        )}
-      >
-        <FileIcon className="h-5 w-5" />
-      </span>
-
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-bold">{file.name}</p>
-        <p className="truncate text-[11px] font-medium text-neutral-400">
-          {file.type}
-          <span className="sm:hidden"> · {formatSize(file.sizeKb)}</span>
-          {file.status === "error" && (
-            <span className="font-semibold text-red-500 sm:hidden"> · {file.error}</span>
-          )}
-          {file.status === "loading" && <span className="sm:hidden"> · Загрузка</span>}
-        </p>
-      </div>
-
-      <span className="hidden text-xs font-medium text-neutral-400 sm:block">{formatSize(file.sizeKb)}</span>
-
-      <span className="flex shrink-0 justify-end text-xs font-semibold sm:w-32">
-        {file.status === "error" && (
-          <span className="hidden items-center gap-1.5 text-red-500 sm:flex">
-            <AlertIcon className="h-4 w-4 shrink-0" />
-            <span className="leading-tight">{file.error}</span>
-          </span>
-        )}
-        {file.status === "done" && (
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-100 text-brand-600">
-            <CheckIcon className="h-3.5 w-3.5" />
-          </span>
-        )}
-        {file.status === "loading" && <span className="hidden text-neutral-500 sm:block">Загрузка</span>}
-      </span>
-
-      <div className="flex shrink-0 items-center gap-1.5">
-        {file.status === "error" && file.retryable && (
-          <button
-            type="button"
-            onClick={onRetry}
-            aria-label={`Повторить загрузку: ${file.name}`}
-            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-neutral-300 bg-white text-ink transition-[border-color,color,transform] duration-150 hover:border-brand-500 hover:text-brand-600 active:scale-90"
-          >
-            <RetryIcon className="h-4.5 w-4.5" />
-          </button>
-        )}
-        <button
-          type="button"
-          onClick={onRemove}
-          aria-label={`Удалить файл: ${file.name}`}
-          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg bg-neutral-100 text-ink transition-[background-color,color,transform] duration-150 hover:bg-red-100 hover:text-red-600 active:scale-90"
-        >
-          <FileXIcon className="h-4.5 w-4.5" />
-        </button>
-      </div>
-
-      {file.status === "loading" && (
-        <span className="absolute inset-x-3 bottom-0 h-0.5 overflow-hidden rounded-full bg-neutral-100" aria-hidden>
-          <animated.span
-            style={{ transform: shimmer.x.to((x) => `translate3d(${x}%, 0, 0)`) }}
-            className="block h-full w-2/5 rounded-full bg-brand-500"
-          />
-        </span>
-      )}
-    </animated.li>
-  );
-}
-
-function SuccessBanner() {
-  const reduce = useReducedMotion() === true;
-  const style = useSpring({
-    from: { opacity: 0, y: 12, scale: 0.97 },
-    to: { opacity: 1, y: 0, scale: 1 },
-    config: { mass: 0.9, tension: 320, friction: 20 },
-    immediate: reduce,
-  });
-  return (
-    <animated.div
-      role="status"
-      style={{ opacity: style.opacity, y: style.y, scale: style.scale }}
-      className="mt-6 rounded-2xl bg-brand-50 px-5 py-4 ring-1 ring-brand-200"
-    >
-      <p className="flex items-center gap-2 text-sm font-extrabold text-brand-700">
-        <CheckIcon className="h-5 w-5" /> Заявка отправлена!
-      </p>
-      <p className="mt-1 text-sm font-medium text-neutral-600">Мы свяжемся с вами в течение 2 рабочих дней.</p>
-    </animated.div>
-  );
-}
+import { validate } from "../utils/validate";
+import { formatSize, plural } from "../utils/format";
+import { EMPTY_FORM, MAX_FILES, MAX_FILE_KB, TYPE_LABELS } from "../constants";
 
 export default function ApplyForm() {
   const reduce = useReducedMotion() === true;
@@ -372,7 +64,7 @@ export default function ApplyForm() {
       });
     };
 
-  const onBlurField = (field: FieldName) => () => {
+  const onBlurField = (field: keyof FormState) => () => {
     setErrors((prev) => {
       const next = { ...prev };
       const err = validate(form)[field];
@@ -480,7 +172,7 @@ export default function ApplyForm() {
     }
     if (Object.keys(errs).length > 0) {
       setNotice(null);
-      const first = (["name", "email", "phone", "task", "consent"] as FieldName[]).find((k) => errs[k]);
+      const first = (["name", "email", "phone", "task", "consent"] as (keyof FormState)[]).find((k) => errs[k]);
       if (first) fieldRefs[first]?.current?.focus();
       return;
     }
@@ -517,33 +209,41 @@ export default function ApplyForm() {
       <div className="pointer-events-none absolute -left-40 top-1/3 h-96 w-96 rounded-full bg-brand-100/70 blur-[110px]" />
       <div className="pointer-events-none absolute -right-40 bottom-0 h-96 w-96 rounded-full bg-brand-100/60 blur-[110px]" />
 
-      <div className="relative mx-auto grid max-w-7xl gap-10 px-5 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-        {/* Левая колонка: заголовок и фото */}
-        <div>
-          <Reveal>
-            <div className="relative">
-              {/* Кикер вне потока — заголовок встаёт ровно на верхний край формы */}
-              <p className="eyebrow absolute -top-8">Онлайн-анкета</p>
+      <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
+        {/* Кикер — выше и заголовка, и формы */}
+        <Reveal>
+          <p className="eyebrow">Онлайн-анкета</p>
+        </Reveal>
+
+        <div className="mt-5 grid gap-14 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+          {/* Левая колонка: заголовок и фото */}
+          <div className="flex flex-col">
+            <Reveal>
               <h2 className="text-4xl font-extrabold tracking-tight text-balance sm:text-5xl">
                 Заполните анкету
               </h2>
               <p className="mt-4 max-w-md text-base font-medium text-neutral-500 sm:text-lg">
                 Ответим в течение 2 рабочих дней. Приложите ТЗ или примеры — так мы быстрее соберём команду.
               </p>
-            </div>
-          </Reveal>
+            </Reveal>
 
-          <Reveal delay={150} direction="zoom" className="mt-10 lg:mt-12 lg:sticky lg:top-28">
-            <TeamPhoto />
-          </Reveal>
-        </div>
+            {/* Фото забирает только оставшуюся высоту колонки: нижний край
+                карточки встаёт ровно по нижнему краю формы. */}
+            <Reveal
+              delay={150}
+              direction="zoom"
+              className="mt-14 lg:mt-20 lg:flex lg:min-h-64 lg:flex-1 lg:justify-start"
+            >
+              <TeamPhoto className="lg:h-full lg:w-auto" />
+            </Reveal>
+          </div>
 
-        {/* Правая колонка: форма */}
-        <Reveal delay={200} direction="left">
+          {/* Правая колонка: форма */}
+          <Reveal delay={200} direction="left">
           <form
             onSubmit={onSubmit}
             noValidate
-            className="relative rounded-[2rem] bg-white p-6 shadow-[0_1px_2px_rgba(11,13,12,0.04),0_24px_64px_-24px_rgba(11,13,12,0.18)] ring-1 ring-black/5 sm:p-10"
+            className="relative rounded-[2rem] mt-10 bg-white p-6 shadow-[0_1px_2px_rgba(11,13,12,0.04),0_24px_64px_-24px_rgba(11,13,12,0.18)] ring-1 ring-black/5 sm:p-10"
           >
             {/* Градиентный волосок — свет, падающий на верхнюю грань карточки */}
             <span
@@ -647,7 +347,7 @@ export default function ApplyForm() {
               >
                 <input ref={inputRef} type="file" multiple className="sr-only" onChange={onPick} />
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-neutral-500 shadow-sm transition-[color,background-color] duration-200 group-hover:text-brand-600">
-                  <FilePlusIcon className="h-6 w-6" />
+                  <FilePlus className="h-6 w-6" />
                 </span>
                 <span>
                   <span className="block text-[15px] font-bold">Перетащите файлы сюда</span>
@@ -694,7 +394,7 @@ export default function ApplyForm() {
                       aria-invalid={Boolean(errors.consent)}
                       className="peer absolute inset-0 h-full w-full cursor-pointer appearance-none rounded-md border-2 border-neutral-400 bg-white transition-[border-color,background-color] duration-200 checked:border-brand-500 checked:bg-brand-500 group-hover:border-brand-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                     />
-                    <CheckIcon className="pointer-events-none absolute inset-0 m-auto h-3.5 w-3.5 scale-50 text-white opacity-0 transition-[opacity,scale] duration-200 peer-checked:scale-100 peer-checked:opacity-100" />
+                    <Check className="pointer-events-none absolute inset-0 m-auto h-3.5 w-3.5 scale-50 text-white opacity-0 transition-[opacity,scale] duration-200 peer-checked:scale-100 peer-checked:opacity-100" strokeWidth={3} />
                   </span>
                   Я согласен на обработку персональных данных
                 </label>
@@ -708,7 +408,8 @@ export default function ApplyForm() {
 
             {status === "success" && <SuccessBanner />}
           </form>
-        </Reveal>
+          </Reveal>
+        </div>
       </div>
     </section>
   );

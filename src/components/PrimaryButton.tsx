@@ -1,7 +1,7 @@
 import type { CSSProperties, PointerEventHandler, ReactNode } from "react";
 import { animated, easings, to, useReducedMotion, useSpring } from "@react-spring/web";
 import { cn } from "../utils/cn";
-import { springSnappy } from "../utils/springs";
+import { springSnappy } from "../constants";
 import { useHoverCapable } from "../hooks/useHoverCapable";
 
 type Props = {

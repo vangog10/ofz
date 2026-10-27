@@ -1,5 +1,5 @@
 import type Partner from "../interfaces/partner.interface";
-import { springSnappy } from "../utils/springs";
+import { springSnappy } from "../constants";
 import { useHoverCapable } from "../hooks/useHoverCapable";
 import { animated, useReducedMotion, useSpring } from "@react-spring/web";
 

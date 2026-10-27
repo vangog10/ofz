@@ -1,4 +1,36 @@
-# React + TypeScript + Vite
+# ТПУ — лендинг «Ваш вызов, наша компетенция»
+
+React + TypeScript + Vite + Tailwind CSS 4, шрифт ALS Sirius.
+
+## Локальный запуск
+
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # production-сборка в dist/
+npm run preview  # проверка собранной версии
+```
+
+## Деплой на GitHub Pages
+
+Сайт собирается и публикуется workflow `.github/workflows/deploy.yml`: на каждый
+пуш в `master` или `v2`, а также вручную — **Actions → Deploy to GitHub Pages → Run workflow**.
+Папка `dist` в репозиторий не коммитится, Pages получает её артефактом.
+
+Что включить один раз в настройках репозитория:
+
+1. **Settings → Pages → Build and deployment → Source: `GitHub Actions`.**
+2. Права в **Settings → Actions → General → Workflow permissions** менять не нужно:
+   workflow сам запрашивает `pages: write` и `id-token: write`.
+
+Адрес сайта: `https://<owner>.github.io/ofz/` (у нас — `https://vangog10.github.io/ofz/`).
+
+Префикс пути `/ofz/` сборка берёт из переменной окружения `GITHUB_REPOSITORY`
+(см. `vite.config.ts`), поэтому локальные `npm run dev` и `npm run preview`
+работают от корня. Если появится свой домен или user-site `<owner>.github.io`,
+сайт переедет в корень — тогда в `vite.config.ts` нужно жёстко поставить `base: "/"`.
+
+## Шаблон Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
