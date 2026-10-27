@@ -15,8 +15,8 @@ import FileItem from "./FileItem";
 import SuccessBanner from "./SuccessBanner";
 import { cn } from "../utils/cn";
 import { validate } from "../utils/validate";
-import { formatSize, plural } from "../utils/format";
-import { EMPTY_FORM, MAX_FILES, MAX_FILE_KB, TYPE_LABELS } from "../constants";
+import { formatSize, plural, formatPhone, isPhoneEmpty, PHONE_PREFIX } from "../utils/format";
+import { EMPTY_FORM, FIELD_LIMITS, MAX_FILES, MAX_FILE_KB, TYPE_LABELS } from "../constants";
 
 export default function ApplyForm() {
   const reduce = useReducedMotion() === true;
@@ -51,7 +51,10 @@ export default function ApplyForm() {
   const setValue =
     (field: "name" | "org" | "email" | "phone" | "task") =>
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const value = e.target.value;
+      const raw = e.target.value;
+      // Телефон собирается по маске: «+7» и дефисы ставятся сами.
+      const value = field === "phone" ? formatPhone(raw) : raw;
+      if (value !== raw) e.target.value = value;
       setForm((prev) => ({ ...prev, [field]: value }));
       // Живая перевалидация поля, в котором уже была ошибка.
       setErrors((prev) => {
@@ -72,6 +75,16 @@ export default function ApplyForm() {
       else delete next[field];
       return next;
     });
+  };
+
+  /** По фокусу подставляем код страны, по уходу — убираем его из пустого поля. */
+  const onFocusPhone = () => {
+    if (isPhoneEmpty(form.phone)) setForm((prev) => ({ ...prev, phone: PHONE_PREFIX }));
+  };
+
+  const onBlurPhone = () => {
+    if (isPhoneEmpty(form.phone)) setForm((prev) => ({ ...prev, phone: "" }));
+    onBlurField("phone")();
   };
 
   const onConsent = (e: ChangeEvent<HTMLInputElement>) => {
@@ -185,7 +198,7 @@ export default function ApplyForm() {
     payload.append("name", form.name.trim());
     payload.append("org", form.org.trim());
     payload.append("email", form.email.trim());
-    payload.append("phone", form.phone.trim());
+    payload.append("phone", isPhoneEmpty(form.phone) ? "" : form.phone.trim());
     payload.append("task", form.task.trim());
     files.forEach((f) => f.file && payload.append("files", f.file));
 
@@ -260,6 +273,7 @@ export default function ApplyForm() {
                   autoComplete="name"
                   autoCapitalize="words"
                   placeholder="Иванов Иван"
+                  maxLength={FIELD_LIMITS.name}
                   value={form.name}
                   onChange={setValue("name")}
                   onBlur={onBlurField("name")}
@@ -274,6 +288,7 @@ export default function ApplyForm() {
                   autoComplete="organization"
                   autoCapitalize="words"
                   placeholder={'ООО "Ромашка"'}
+                  maxLength={FIELD_LIMITS.org}
                   value={form.org}
                   onChange={setValue("org")}
                   className="field"
@@ -290,6 +305,7 @@ export default function ApplyForm() {
                   autoCorrect="off"
                   spellCheck={false}
                   placeholder="ivanov_ivan@mail.ru"
+                  maxLength={FIELD_LIMITS.email}
                   value={form.email}
                   onChange={setValue("email")}
                   onBlur={onBlurField("email")}
@@ -304,10 +320,12 @@ export default function ApplyForm() {
                   type="tel"
                   inputMode="tel"
                   autoComplete="tel"
-                  placeholder="+7 (999) 000-00-00"
+                  placeholder="+7 999-123-45-67"
+                  maxLength={FIELD_LIMITS.phone + 1}
                   value={form.phone}
                   onChange={setValue("phone")}
-                  onBlur={onBlurField("phone")}
+                  onFocus={onFocusPhone}
+                  onBlur={onBlurPhone}
                   aria-invalid={Boolean(errors.phone)}
                   className={fieldErrorCls(errors.phone)}
                 />

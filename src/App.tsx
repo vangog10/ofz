@@ -9,9 +9,11 @@ import Footer from "./components/Footer";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-white">
+    // Колонка на весь экран: main забирает свободное место, футер всегда
+    // прижат к низу — под ним не остаётся белой полосы.
+    <div className="flex min-h-dvh flex-col bg-white">
       <Header />
-      <main>
+      <main className="flex-1">
         <Hero />
         <Partners />
         <Benefits />

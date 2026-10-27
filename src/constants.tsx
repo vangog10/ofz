@@ -139,8 +139,13 @@ const FAQ_ITEMS: FaqItem[] = [
 const MAX_FILES: number = 5;
 const MAX_FILE_KB: number = 1.2 * 1024;
 
+/**
+ * Пределы длины для полей формы. У телефона лимит считается без учёта «+»:
+ * сам плюс к длине не добавляется, поэтому в input допустимо на символ больше.
+ */
+const FIELD_LIMITS = { name: 100, org: 100, email: 50, phone: 15 };
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const PHONE_RE = /^\+?[\d\s()-]{10,18}$/;
 
 const EMPTY_FORM: FormState = {
   name: "",
@@ -188,8 +193,8 @@ export {
   FAQ_ITEMS,
   MAX_FILES,
   MAX_FILE_KB,
+  FIELD_LIMITS,
   EMAIL_RE,
-  PHONE_RE,
   EMPTY_FORM,
   TYPE_LABELS,
   FOOTER_COLUMN_TITLE_CLS,

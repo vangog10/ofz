@@ -57,7 +57,7 @@ export default function StepCard({ step, i, last, inView }: Props) {
             "relative flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full text-4xl font-extrabold ring-8 ring-white transition-[box-shadow,outline-color] duration-300",
             last
               ? "bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-xl shadow-brand-500/40"
-              : "bg-white text-brand-500 shadow-lg shadow-black/5 outline-2 -outline-offset-2 outline-brand-500/30 group-hover:outline-brand-500/70"
+              : "bg-white text-brand-500 shadow-[0_2px_6px_rgba(11,13,12,0.10),0_16px_32px_-14px_rgba(11,13,12,0.38)] outline-2 -outline-offset-2 outline-brand-500/30 group-hover:outline-brand-500/70"
           )}
         >
           {last ? <Check className="h-8 w-8" strokeWidth={3} /> : i + 1}

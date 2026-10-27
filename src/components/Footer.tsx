@@ -13,21 +13,21 @@ export default function Footer() {
 
       <div className="relative mx-auto max-w-7xl px-5 pb-[calc(2rem+env(safe-area-inset-bottom,0px))] pt-16 sm:px-8 sm:pt-20">
         <div className="grid items-start gap-12 lg:grid-cols-[1.35fr_0.9fr_0.9fr] lg:items-stretch lg:gap-16">
-          {/* Логотип — на десктопе по высоте колонок */}
+          {/* Логотип — по высоте колонок справа, чтобы блок не выбивался */}
           <Reveal direction="none" className="lg:h-full">
             <a
               href="https://tpu.ru/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Томский политехнический университет — перейти на tpu.ru"
-              className="inline-block max-w-full w-3/4 lg:h-full lg:w-auto"
+              className="inline-block w-3/4 max-w-full lg:w-[13rem]"
             >
               <img
                 src={tpuBlackLogo}
                 alt="Томский политехнический университет"
                 width={232}
                 height={212}
-                className="block h-auto w-full object-contain lg:h-full lg:w-auto"
+                className="block h-auto w-full object-contain"
               />
             </a>
           </Reveal>

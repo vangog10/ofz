@@ -49,6 +49,12 @@
     -webkit-tap-highlight-color: transparent;
     /* Не даём pull-to-refresh дёргать страницу: сверху тёмный hero. */
     overscroll-behavior-y: none;
+    /*
+     * Канва страницы — под цвет футера. Фон body уезжает на канву, если у html
+     * своего фона нет, и тогда под футером появляется белая полоса (короткая
+     * страница, мобильный overscroll). Своим фоном перекрываем эту утечку.
+     */
+    background-color: var(--color-ink);
   }
   /*
    * Укрупнённый масштаб на десктопе: весь макет построен на rem,
@@ -91,9 +97,11 @@
 
 @layer components {
   /* Всё движение кнопки — на пружинах (PrimaryButton);
-     здесь только цвета, тени и фокус. */
+     здесь только цвета, тени и фокус. Заливка — акцентный brand-600:
+     он заметно светлее тёмной ступени, но белый текст на нём ещё читается;
+     на hover уходим в brand-700. */
   .btn-primary {
-    @apply relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold whitespace-nowrap text-white shadow-lg shadow-brand-500/30 transition-[background-color,box-shadow] duration-200 hover:bg-brand-600 hover:shadow-xl hover:shadow-brand-500/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-brand-500 disabled:hover:shadow-lg;
+    @apply relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-bold whitespace-nowrap text-white shadow-lg shadow-brand-600/35 transition-[background-color,box-shadow] duration-200 hover:bg-brand-700 hover:shadow-xl hover:shadow-brand-700/45 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-brand-600 disabled:hover:shadow-lg;
   }
 
   .btn-shine {
