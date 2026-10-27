@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { animated, useReducedMotion, useSpring } from "@react-spring/web";
-import tpuLogo from "../assets/logos/TPU.logo.svg";
+import TpuLogo from "./TpuLogo";
 import PrimaryButton from "./PrimaryButton";
 import { springGentle } from "../constants";
 
@@ -22,7 +22,7 @@ export default function Header() {
     immediate: reduce,
   });
 
-  // Состояние «пилюли» после скролла — тоже на пружине.
+  // «Пилюля» непрозрачная; после скролла на пружине меняется только тень.
   const pill = useSpring({
     s: scrolled ? 1 : 0,
     config: springGentle,
@@ -30,14 +30,6 @@ export default function Header() {
   });
 
   const pillStyle = {
-    backgroundColor: pill.s.to({
-      range: [0, 1],
-      output: ["rgba(255,255,255,0.75)", "rgba(255,255,255,0.92)"],
-    }),
-    borderColor: pill.s.to({
-      range: [0, 1],
-      output: ["rgba(255,255,255,0.4)", "rgba(0,0,0,0.06)"],
-    }),
     boxShadow: pill.s.to({
       range: [0, 1],
       output: [
@@ -54,19 +46,16 @@ export default function Header() {
     >
       <animated.div
         style={pillStyle}
-        className="mx-auto flex max-w-7xl items-center justify-between gap-4 rounded-2xl border px-4 py-2.5 backdrop-blur-xl sm:px-6"
+        className="mx-auto flex max-w-7xl items-center justify-between gap-4 rounded-2xl border border-black/[0.06] bg-white px-4 py-2.5 sm:px-6"
       >
         <a
           href="https://tpu.ru/"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Томский политехнический университет — перейти на tpu.ru"
+          className="group"
         >
-          <img
-            src={tpuLogo}
-            alt="Томский политехнический университет"
-            className="h-8 w-auto sm:h-10"
-          />
+          <TpuLogo className="h-8 w-auto sm:h-10" />
         </a>
 
         <div className="flex items-center gap-3 sm:gap-8">
