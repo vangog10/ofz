@@ -1,132 +1,194 @@
-@import 'tailwindcss';
-
-:root {
-
-  --color-accent-green: #28be46;
-  --color-accent-blue: #6573ff;
-  --color-accent-red: #ff4460;
-  --color-accent-yellow: #ffb600;
-
-  --color-bg-globe: #f4f4f4;
-  --color-bg-island: #ffffff;
-  --color-bg-island-inner: #d9fee0;
-  --color-bg-overlay: rgba(0, 0, 0, 0.5);   
-  
-
-  --color-text-primary: #000;
-  --color-text-secondary: rgba(0, 0, 0, 0.5);
-  --color-text-tertiary: rgba(0, 0, 0, 0.4);
-  --color-text-primary-inv: #fff;
-  --color-text-secondary-inv: rgba(255, 255, 255, 0.5);
-  --color-text-tertiary-inv: rgba(255, 255, 255, 0.6);
-
-  --color-link: var(--color-accent-blue);
-  --color-link-visited: var(--color-accent-red);
-
-  --color-icon-primary: rgba(0, 0, 0, 0.9);
-  --color-icon-secondary: rgba(0, 0, 0, 0.75);
-  --color-icon-tertiary: var(--color-text-tertiary);
-  --color-icon-primary-inv: rgba(255, 255, 255, 0.9);
-  --color-icon-secondary-inv: rgba(255, 255, 255, 0.75);
-  --color-icon-tertiary-inv: rgba(255, 255, 255, 0.55);
-  --color-icon-link: var(--color-accent-blue);
-  --color-icon-placeholder: rgba(0, 0, 0, 0.25);
-
-  --color-button-primary-default: var(--color-accent-green);
-  --color-button-primary-hover: #48e868;
-  --color-button-primary-clicked: #19a235;
-  --color-button-primary-disabled: rgba(40, 190, 70, 0.6);
-  
-  --color-button-secondary-default: var(--color-accent-green);
-  --color-button-secondary-hover: var(--color-accent-green);
-  --color-button-secondary-clicked: var(--color-button-primary-clicked);
-  --color-button-secondary-disabled: rgba(40, 190, 70, 0.5);
-
-  --color-button-tertiary-default: rgba(0, 0, 0, 0.15);
-  --color-button-tertiary-hover: rgba(0, 0, 0, 0.07);
-  --color-button-tertiary-clicked: rgba(0, 0, 0, 0.2);
-  --color-button-tertiary-disabled: rgba(0, 0, 0, 0.05);
-
-  --color-button-accent-default: var(--color-accent-yellow);
-  --color-button-accent-hover: #ffd52f;
-  --color-button-accent-clicked: #eba800;
-  --color-button-accent-disabled: rgba(255, 182, 0, 0.5);
-
-  --color-input-default: rgba(0, 0, 0, 0.4);
-  --color-input-hover: rgba(0, 0, 0, 0.7);
-  --color-input-focus: var(--color-accent-green);
-  --color-input-disabled: rgba(0, 0, 0, 0.2);
-
-  --color-extra-devider: rgba(0, 0, 0, 0.12);
-  --color-extra-placeholder: rgba(0, 0, 0, 0.35);
-
-  --color-warning-success: var(--color-accent-green);
-  --color-warning-caution: var(--color-accent-yellow);
-  --color-warning-failed: var(--color-accent-red);
-};
+@import "tailwindcss";
 
 @theme {
+  --font-sans: "Manrope Variable", ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
-  --color-accent-green: var(--color-accent-green);
-  --color-accent-blue: var(--color-accent-blue);
-  --color-accent-red: var(--color-accent-red);
-  --color-accent-yellow: var(--color-accent-yellow);
+  --color-brand-50: #effcf2;
+  --color-brand-100: #d7f7df;
+  --color-brand-200: #b0eebf;
+  --color-brand-300: #7fe098;
+  --color-brand-400: #4fd26e;
+  --color-brand-500: #2cc04f;
+  --color-brand-600: #1fa240;
+  --color-brand-700: #1a8136;
+  --color-ink: #0b0d0c;
+  --color-ink-soft: #151816;
 
-  --color-bg-globe: var(--color-bg-globe);
-  --color-bg-island: var(--color-bg-island);
-  --color-bg-island-inner: var(--color-bg-island-inner)
-  --color-bg-overlay: var(--color-bg-overlay);   
-  --color-bg-accent: var(--color-accent-green);
+  /* Сильный ease-out для оставшихся CSS-переходов (цвета, тени). */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
 
-  --color-text-primary: var(--color-text-primary);
-  --color-text-secondary: var(--color-text-secondary);
-  --color-text-tertiary: var(--color-text-tertiary);
-  --color-text-primary-inv: var(--color-text-primary-inv);
-  --color-text-secondary-inv: var(--color-text-secondary-inv);
-  --color-text-tertiary-inv: var(--color-text-tertiary-inv);
+@layer base {
+  :root {
+    --noise-texture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    /* Убирает серо-голубую вспышку при тапе (iOS/Android). */
+    -webkit-tap-highlight-color: transparent;
+    /* Не даём pull-to-refresh дёргать страницу: сверху тёмный hero. */
+    overscroll-behavior-y: none;
+  }
+  body {
+    @apply bg-white font-sans text-ink antialiased;
+    overflow-x: hidden;
+  }
+  /* Минимум 16px: iOS не должен зумовать страницу при фокусе. */
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+  /* Контролы: мгновенный клик и без выделения текста при долгом тапе. */
+  button,
+  a,
+  [role="button"] {
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  ::selection {
+    background: var(--color-brand-500);
+    color: #fff;
+  }
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+}
 
-  --color-link: var(--color-accent-blue);
-  --color-link-visited: var(--color-accent-red);
+@layer components {
+  /* Всё движение кнопки — на пружинах (PrimaryButton);
+     здесь только цвета, тени и фокус. */
+  .btn-primary {
+    @apply relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-bold whitespace-nowrap text-white shadow-lg shadow-brand-500/30 transition-[background-color,box-shadow] duration-200 hover:bg-brand-600 hover:shadow-xl hover:shadow-brand-500/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-brand-500 disabled:hover:shadow-lg;
+  }
 
-  --color-icon-primary: var(--color-icon-primary);
-  --color-icon-secondary: var(--color-icon-secondary);
-  --color-icon-tertiary: var(--color-text-tertiary);
-  --color-icon-primary-inv: var(--color-icon-primary-inv);
-  --color-icon-secondary-inv: var(--color-icon-secondary-inv);
-  --color-icon-tertiary-inv: var(--color-icon-tertiary-inv);
-  --color-icon-link: var(--color-accent-blue);
-  --color-icon-placeholder: var(--color-icon-placeholder);
+  .btn-shine {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.38) 50%, transparent 70%);
+  }
 
-  --color-button-primary-default: var(--color-accent-green);
-  --color-button-primary-hover: var(--color-button-primary-hover);
-  --color-button-primary-clicked: var(--color-button-primary-clicked);
-  --color-button-primary-disabled: var(--color-button-primary-disabled);
-  
-  --color-button-secondary-default: var(--color-accent-green);
-  --color-button-secondary-hover: var(--color-accent-green);
-  --color-button-secondary-clicked: var(--color-button-primary-clicked);
-  --color-button-secondary-disabled: var(--color-button-secondary-disabled);
+  .field {
+    @apply w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-base font-medium text-ink outline-none transition-[border-color,background-color,box-shadow] duration-200 placeholder:font-normal placeholder:text-neutral-400 hover:border-neutral-300 focus:border-brand-500 focus:bg-white focus:ring-4 focus:ring-brand-500/15;
+  }
 
-  --color-button-tertiary-default: var(--color-button-tertiary-default);
-  --color-button-tertiary-hover: var(--color-button-tertiary-hover);
-  --color-button-tertiary-clicked: var(--color-button-tertiary-clicked);
-  --color-button-tertiary-disabled: var(--color-button-tertiary-disabled);
+  .bg-dots {
+    background-image: radial-gradient(rgba(11, 13, 12, 0.09) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  .bg-dots-light {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
 
-  --color-button-accent-default: var(--color-accent-yellow);
-  --color-button-accent-hover: var(--color-button-accent-hover);
-  --color-button-accent-clicked: var(--color-button-accent-clicked);
-  --color-button-accent-disabled: var(--color-button-accent-disabled);
+  /* Кикеры секций: редакционная типографика с брендовой точкой. */
+  .eyebrow,
+  .eyebrow-light {
+    @apply inline-flex items-center gap-2.5 text-[11px] font-extrabold uppercase tracking-[0.22em];
+  }
+  .eyebrow {
+    @apply text-brand-600;
+  }
+  .eyebrow-light {
+    @apply text-brand-300;
+  }
+  .eyebrow::before,
+  .eyebrow-light::before {
+    content: "";
+    @apply h-1.5 w-1.5 rounded-full;
+  }
+  .eyebrow::before {
+    @apply bg-brand-500;
+  }
+  .eyebrow-light::before {
+    @apply bg-brand-400;
+  }
 
-  --color-input-default: var(--color-input-default);
-  --color-input-hover: var(--color-input-hover);
-  --color-input-focus: var(--color-accent-green);
-  --color-input-disabled: var(--color-input-disabled);
+  /* Кинематографичная обработка фото: легче, спокойнее, «дороже». */
+  .img-graded {
+    filter: saturate(0.84) contrast(1.05) brightness(0.94);
+  }
 
-  --color-extra-devider: var(--color-extra-devider);
-  --color-extra-placeholder: var(--color-extra-placeholder);
+  /* Мелкое зерно поверх hero — убирает «пластиковую» гладкость тёмных зон. */
+  .bg-noise {
+    background-image: var(--noise-texture);
+  }
 
-  --color-warning-success: var(--color-accent-green);
-  --color-warning-caution: var(--color-accent-yellow);
-  --color-warning-failed: var(--color-accent-red);
+  /* Жидкое стекло (Apple Liquid Glass): блик по верхней грани, внутреннее
+     свечение, брендовый отсвет у нижнего края и зерно. Слои статичные —
+     никакого backdrop-filter: карточка двигается только трансформом,
+     поэтому кадр остаётся композитным и движение не «дробится» на пиксели. */
+  .glass-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background:
+      radial-gradient(135% 120% at 12% 0%, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.05) 38%, transparent 62%),
+      linear-gradient(160deg, rgba(27, 33, 28, 0.68), rgba(9, 12, 10, 0.78));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+      inset 0 0 28px rgba(44, 192, 79, 0.1),
+      0 24px 60px -24px rgba(0, 0, 0, 0.85),
+      0 2px 10px -2px rgba(0, 0, 0, 0.35);
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+  /* Зеркальный блик сверху-слева и брендовый отсвет снизу-справа. */
+  .glass-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      linear-gradient(118deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.06) 24%, transparent 48%),
+      radial-gradient(85% 70% at 95% 105%, rgba(44, 192, 79, 0.22), transparent 65%);
+  }
+  /* Зерно — стекло не выглядит пластиковым. */
+  .glass-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background-image: var(--noise-texture);
+    opacity: 0.4;
+    mix-blend-mode: soft-light;
+  }
 
-};
+  /* Левитация карточек — CSS-анимация на композиторе: качание сильнее,
+     но без пиксельных ступенек (rAF-пружина дёргается под нагрузкой hero).
+     Амплитуда/период/фаза задаются per-card через кастомные свойства. */
+  @keyframes card-bob {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(0, var(--float-amp, -16px), 0);
+    }
+  }
+  .glass-float {
+    animation: card-bob var(--float-dur, 8s) cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    animation-delay: var(--float-delay, 0s);
+  }
+}
+
+/* Пружины сами уважают prefers-reduced-motion; для CSS остаётся только
+   отключение плавного скролла и декоративной левитации. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .glass-float {
+    animation: none;
+  }
+}
