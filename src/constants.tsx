@@ -1,5 +1,5 @@
 import type { SpringConfig } from "@react-spring/web";
-import { GraduationCap, SlidersHorizontal, Timer, Users } from "lucide-react";
+import { Clock, GraduationCap, ShieldCheck, SlidersHorizontal, Timer, Users, Zap } from "lucide-react";
 import yandex from "./assets/logos/yandex.png";
 import rosatom from "./assets/logos/rosatom.png";
 import tbank from "./assets/logos/tbank.png";
@@ -46,9 +46,9 @@ const HERO_LINES = [
 const HERO_WORD_COUNT = HERO_LINES.reduce((n, line) => n + line.length, 0);
 
 const HERO_CARDS: HeroCard[] = [
-  { title: "Старт за 2 недели", text: "быстрый запуск проекта" },
-  { title: "Ответ за 2 дня", text: "рассмотрение в профильном институте" },
-  { title: "NDA при необходимости", text: "конфиденциальность под защитой" },
+  { icon: Zap, title: "Старт за 2 недели", text: "быстрый запуск проекта" },
+  { icon: Clock, title: "Ответ за 2 дня", text: "рассмотрение в профильном институте" },
+  { icon: ShieldCheck, title: "NDA при необходимости", text: "конфиденциальность под защитой" },
 ];
 
 // Амплитуда, период и фаза левитации — у каждой карточки своя, чтобы

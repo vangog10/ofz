@@ -159,7 +159,7 @@ export default function Hero() {
                         "inline-block",
                         accent &&
                           "bg-gradient-to-r from-brand-300 via-brand-400 to-brand-500 bg-clip-text text-transparent",
-                        dim && "text-white/40"
+                        dim && "text-white"
                       )}
                     >
                       {word}

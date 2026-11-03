@@ -21,7 +21,7 @@ export default function Steps() {
   });
 
   return (
-    <section id="steps" className="relative overflow-hidden bg-white py-20 sm:py-28">
+    <section id="steps" className="relative scroll-mt-24 overflow-hidden bg-white py-20 sm:py-28">
       <div className="pointer-events-none absolute left-1/2 top-0 h-72 w-[40rem] -translate-x-1/2 rounded-full bg-brand-100/60 blur-[100px]" />
 
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8">

@@ -12,7 +12,7 @@ export default function Footer() {
       <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-brand-500/15 blur-[110px]" />
 
       <div className="relative mx-auto max-w-7xl px-5 pb-[calc(2rem+env(safe-area-inset-bottom,0px))] pt-16 sm:px-8 sm:pt-20">
-        <div className="grid items-start gap-12 lg:grid-cols-[1.35fr_0.9fr_0.9fr] lg:items-stretch lg:gap-16">
+        <div className="grid items-start gap-12 lg:grid-cols-[1fr_auto_auto] lg:items-stretch lg:gap-16">
           {/* Логотип — по высоте колонок справа, чтобы блок не выбивался */}
           <Reveal direction="none" className="lg:h-full">
             <a
@@ -20,14 +20,12 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Томский политехнический университет — перейти на tpu.ru"
-              className="inline-block w-3/4 max-w-full lg:w-[13rem]"
+              className="inline-block"
             >
               <img
                 src={tpuBlackLogo}
                 alt="Томский политехнический университет"
-                width={232}
-                height={212}
-                className="block h-auto w-full object-contain"
+                className="block"
               />
             </a>
           </Reveal>

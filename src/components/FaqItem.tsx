@@ -31,7 +31,7 @@ export default function FaqItem({ item, index, open, onToggle }: Props) {
       className={cn(
         "rounded-2xl border backdrop-blur-sm transition-[border-color,background-color,box-shadow] duration-300",
         open
-          ? "border-brand-500/50 bg-white/[0.09] shadow-[0_0_0_1px_rgba(44,192,79,0.15),0_20px_60px_-20px_rgba(44,192,79,0.35)]"
+          ? "border-brand-500/50 bg-white shadow-[0_0_0_1px_rgba(44,192,79,0.15),0_20px_60px_-20px_rgba(44,192,79,0.35)]"
           : "border-white/10 bg-white/[0.04] hover:border-white/25 hover:bg-white/[0.07]"
       )}
     >
@@ -43,7 +43,9 @@ export default function FaqItem({ item, index, open, onToggle }: Props) {
         onClick={onToggle}
         className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-2xl px-5 py-5 text-left transition-colors duration-200 active:bg-white/[0.08] sm:px-7 sm:py-6"
       >
-        <span className="text-base font-extrabold text-white sm:text-xl">{item.q}</span>
+        <span className={cn("text-base font-extrabold transition-colors duration-200 sm:text-xl", open ? "text-ink" : "text-white")}>
+          {item.q}
+        </span>
         <animated.span
           style={{ rotate: chevron.rotate }}
           className={cn(
@@ -63,7 +65,9 @@ export default function FaqItem({ item, index, open, onToggle }: Props) {
         className="grid"
       >
         <div className="overflow-hidden">
-          <p className="px-5 pb-6 text-base font-medium text-neutral-300 sm:px-7 sm:text-lg">{item.a}</p>
+          <p className={cn("px-5 pb-6 text-base font-medium transition-colors duration-200 sm:px-7 sm:text-lg", open ? "text-neutral-600" : "text-neutral-300")}>
+            {item.a}
+          </p>
         </div>
       </animated.div>
     </div>

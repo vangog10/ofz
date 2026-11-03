@@ -4,7 +4,7 @@ import { BENEFITS } from "../constants";
 
 export default function Benefits() {
   return (
-    <section className="bg-dots relative bg-neutral-100 py-16 sm:py-24">
+    <section id="benefits" className="relative scroll-mt-24 bg-neutral-100 py-16 sm:py-24">
       <div className="pointer-events-none absolute -top-24 left-1/2 h-64 w-[42rem] -translate-x-1/2 rounded-full bg-brand-100/60 blur-[110px]" />
 
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8">

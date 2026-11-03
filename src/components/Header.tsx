@@ -58,6 +58,26 @@ export default function Header() {
           <TpuLogo className="h-8 w-auto sm:h-10" />
         </a>
 
+        <nav aria-label="Разделы страницы" className="hidden lg:block">
+          <ul className="flex items-center gap-6">
+            <li>
+              <a href="#benefits" className="text-sm font-bold text-neutral-600 transition-colors hover:text-brand-600">
+                Преимущества
+              </a>
+            </li>
+            <li>
+              <a href="#steps" className="text-sm font-bold text-neutral-600 transition-colors hover:text-brand-600">
+                Как это работает
+              </a>
+            </li>
+            <li>
+              <a href="#faq" className="text-sm font-bold text-neutral-600 transition-colors hover:text-brand-600">
+                Вопросы
+              </a>
+            </li>
+          </ul>
+        </nav>
+
         <div className="flex items-center gap-3 sm:gap-8">
           <div className="hidden text-right leading-tight sm:block">
             <a
