@@ -231,3 +231,306 @@
     animation: none;
   }
 }
+
+/*
+ * ─── Встроенная форма Битрикс24: цвет и радиусы ────────────────────────────
+ * Поля и кнопка получают ту же палитру, что у сайта: .field и .btn-primary.
+ * (rounded-xl = 0.75rem; neutral-50/200; акцент brand-500/600; текст ink.)
+ *
+ * !important обязателен: часть оформления «Дизайнер» Битрикс24 пишет прямо
+ * в атрибут style, и стили виджета подключаются позже нашего файла.
+ * Селекторы накрывают и классы виджета, и теги: опубликованного списка
+ * классов у него нет (см. b24.md).
+ */
+
+/* Гарнитура сайта для всего текста формы: виджет тянет свою (системную),
+   а элементы форм по умолчанию вообще не наследуют font-family — поэтому
+   правило накрывает и звёздочку, и псевдоэлементы с текстом. */
+.b24-form,
+.b24-form *,
+.b24-form *::before,
+.b24-form *::after {
+  font-family:
+    "ALS Sirius", ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+}
+
+/*
+ * Разделитель между шапкой и полями.
+ * Линия живёт на первом поле, а не на шапке: у шапки она шла по её ширине —
+ * шире инпутов. У поля ширина ровно та же, что у самого инпута, поэтому
+ * разделитель встаёт по краям элементов формы. Свою линию шапки гасим,
+ * иначе получится две.
+ */
+.b24-form .b24-form-header {
+  position: relative !important;
+  margin-bottom: 0 !important;
+  border-bottom: 0 !important;
+  padding-top: 2rem !important; /* воздух над заголовком */
+  padding-bottom: 1.25rem !important; /* воздух между описанием и линией */
+}
+
+/*
+ * Линия под шапкой по краям инпутов. Шапка шире полей, поэтому рисуем линию
+ * псевдоэлементом и подрезаем её с боков ровно на отступ полей — величину
+ * держит переменная, чтобы подгонять в одном месте.
+ */
+.b24-form .b24-form-header::after {
+  content: "" !important;
+  position: absolute !important;
+  left: var(--b24-divider-inset, 1.875rem) !important;
+  right: var(--b24-divider-inset, 1.875rem) !important;
+  bottom: 0 !important;
+  height: 1px !important;
+  background-color: #e5e5e5 !important; /* neutral-200 */
+  pointer-events: none !important;
+}
+
+.b24-form .b24-form-field:first-child {
+  padding-top: 2rem !important; /* от линии до инпута — как между полями */
+}
+
+/*
+ * Служебные полоски виджета под полями (например под многострочным) в нашей
+ * сетке лишние: разделитель есть только под шапкой. Гасим рамки у обёрток
+ * полей целиком, чтобы такие полоски не всплывали и на других полях.
+ *
+ * Специфичность ниже, чем у правил выше и ниже, поэтому не мешает:
+ *   разделитель под шапкой — (0,3,0), пунктир файлового поля — (0,2,0),
+ *   но объявлен позже; здесь — (0,2,0).
+ */
+.b24-form .b24-form-field {
+  border: 0 !important;
+}
+
+/* Заголовок формы — тот же вес, что у h2 на сайте (font-extrabold).
+   В проекте подключены только Regular 400 и Bold 700, поэтому 800 отрисуется
+   файлом Bold — визуально это и есть «жирнее». */
+.b24-form .b24-form-header-title,
+.b24-form .b24-form-header > :first-child {
+  font-weight: 800 !important;
+}
+
+.b24-form :is(
+    .b24-form-control,
+    .b24-form-input,
+    .b24-form-textarea,
+    .b24-form-select,
+    input:not([type]),
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="url"],
+    input[type="date"],
+    input[type="password"],
+    input[type="search"],
+    textarea,
+    select
+  ) {
+  border-radius: 0.75rem !important;
+  background-color: #fafafa !important; /* neutral-50 */
+  border-color: #2cc04f !important; /* brand-500 — акцентная обводка */
+  color: #0b0d0c !important; /* ink */
+  box-shadow: none !important;
+  outline: none !important;
+  transition:
+    border-color 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    background-color 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 200ms cubic-bezier(0.23, 1, 0.32, 1) !important;
+}
+
+.b24-form :is(
+    .b24-form-control,
+    .b24-form-input,
+    .b24-form-textarea,
+    .b24-form-select,
+    input:not([type]),
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="url"],
+    input[type="date"],
+    input[type="password"],
+    input[type="search"],
+    textarea,
+    select
+  ):hover {
+  border-color: #1fa240 !important; /* brand-600 */
+}
+
+.b24-form :is(
+    .b24-form-control,
+    .b24-form-input,
+    .b24-form-textarea,
+    .b24-form-select,
+    input:not([type]),
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="url"],
+    input[type="date"],
+    input[type="password"],
+    input[type="search"],
+    textarea,
+    select
+  ):focus {
+  border-color: #1fa240 !important; /* brand-600 */
+  background-color: #fff !important;
+  box-shadow: 0 0 0 4px rgba(44, 192, 79, 0.15) !important; /* brand-500/15 */
+}
+
+/* Единый ритм между полями — одинаковый шаг у всех, включая зону загрузки
+   файла. Собственный отступ виджета гасим: иначе вертикальные margin соседних
+   блоков схлопнутся, и добавка «съестся». Именно margin-top, а не padding-top,
+   чтобы отступ файлового поля оказался СНАРУЖИ пунктирной рамки.
+   Шаг 2rem — с запасом под всплывающую подсказку об ошибке: она висит под
+   полем абсолютно и при меньшем зазоре наезжала на следующее поле. */
+.b24-form .b24-form-field {
+  margin-bottom: 0 !important;
+}
+
+.b24-form .b24-form-field + .b24-form-field {
+  margin-top: 2rem !important; /* 32px: 20px шага + место под подсказку */
+}
+
+.b24-form :is(input, textarea)::placeholder {
+  color: #a3a3a3 !important; /* neutral-400 */
+  font-weight: 400 !important;
+  opacity: 1 !important;
+}
+
+/* Кнопка отправки — цвет как у .btn-primary. */
+.b24-form :is(.b24-form-btn, .b24-form-btn-submit),
+.b24-form button[type="submit"] {
+  border-radius: 0.75rem !important;
+  border-color: transparent !important;
+  background-color: #1fa240 !important; /* brand-600 */
+  color: #fff !important;
+  box-shadow:
+    0 10px 15px -3px rgba(31, 162, 64, 0.35),
+    0 4px 6px -4px rgba(31, 162, 64, 0.35) !important;
+  transition:
+    background-color 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 200ms cubic-bezier(0.23, 1, 0.32, 1) !important;
+}
+
+.b24-form :is(.b24-form-btn, .b24-form-btn-submit):hover {
+  background-color: #1a8136 !important; /* brand-700 */
+}
+
+/*
+ * ─── Поле загрузки файла ───────────────────────────────────────────────────
+ * Дроп-зона в духе прежней анкеты: пунктир 2px, rounded-2xl, светлая заливка.
+ * Наведение — только точным указателям (на таче hover срабатывает на тап и
+ * даёт ложный отклик). Состояния меняют цвет рамки, а не её толщину, —
+ * содержимое зоны не дёргается.
+ */
+.b24-form :is(.b24-form-field-file, .b24-form-file) {
+  border: 2px dashed #d4d4d4 !important; /* neutral-300 */
+  border-radius: 1rem !important; /* rounded-2xl */
+  background-color: #fafafa !important; /* neutral-50 */
+  padding: 1rem 1.25rem !important;
+  transition:
+    border-color 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    background-color 200ms cubic-bezier(0.23, 1, 0.32, 1) !important;
+}
+
+/* Вложенный контейнер виджета не рисует вторую рамку по нашей. */
+.b24-form .b24-form-field-file :is(.b24-form-file, .b24-form-control-file),
+.b24-form .b24-form-file .b24-form-control-file {
+  border: 0 !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .b24-form :is(.b24-form-field-file, .b24-form-file):hover {
+    border-color: #4fd26e !important; /* brand-400 */
+    background-color: #effcf2 !important; /* brand-50 */
+  }
+}
+
+/* Фокус (в том числе после клика по зоне) и подсветка при перетаскивании. */
+.b24-form :is(.b24-form-field-file, .b24-form-file):focus-within {
+  border-color: #2cc04f !important; /* brand-500 */
+  background-color: #effcf2 !important; /* brand-50 */
+}
+
+/* Ошибка валидации — красная рамка, состояние читается до отправки. */
+.b24-form .b24-form-field--error :is(.b24-form-field-file, .b24-form-file) {
+  border-color: #f87171 !important; /* red-400 */
+  background-color: #fef2f2 !important; /* red-50 */
+}
+
+/* Подпись поля — цвет основного текста. */
+.b24-form :is(.b24-form-field-file, .b24-form-file)
+  :is(.b24-form-control-label, .b24-form-field-label) {
+  color: #0b0d0c !important; /* ink */
+}
+
+/* Пояснительный текст под зоной — приглушённый серый, как подписи-подсказки
+   на остальной странице (text-neutral-500). */
+.b24-form :is(.b24-form-field-file, .b24-form-file)
+  :is(.b24-form-control-desc, .b24-form-field-desc, .b24-form-file-desc, small) {
+  color: #737373 !important; /* neutral-500 */
+}
+
+/* Сам input остаётся нативным — только типографика в общем стиле сайта. */
+.b24-form :is(.b24-form-field-file, .b24-form-file) input[type="file"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  font-family: inherit !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  color: #737373 !important; /* neutral-500 */
+  cursor: pointer !important;
+}
+
+/* Кнопка выбора файла — как второстепенная кнопка сайта. */
+.b24-form :is(.b24-form-field-file, .b24-form-file) input[type="file"]::file-selector-button {
+  margin-right: 0.75rem !important;
+  padding: 0.5rem 0.875rem !important;
+  border: 1px solid #e5e5e5 !important; /* neutral-200 */
+  border-radius: 0.5rem !important;
+  background-color: #fff !important;
+  color: #0b0d0c !important; /* ink */
+  font-family: inherit !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition:
+    border-color 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    background-color 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 160ms cubic-bezier(0.23, 1, 0.32, 1) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .b24-form :is(.b24-form-field-file, .b24-form-file) input[type="file"]::file-selector-button:hover {
+    border-color: #2cc04f !important; /* brand-500 */
+    background-color: #effcf2 !important; /* brand-50 */
+  }
+}
+
+/* Отклик на нажатие отдаём сразу, до отпускания. */
+.b24-form :is(.b24-form-field-file, .b24-form-file) input[type="file"]::file-selector-button:active {
+  transform: scale(0.97) !important;
+}
+
+/*
+ * ─── Чекбокс согласия: отступы ─────────────────────────────────────────────
+ * Зазор справа отделяет квадрат от текста согласия, а margin-top в долях em
+ * ставит его на первую строку многострочного текста (а не по центру блока).
+ */
+.b24-form input[type="checkbox"] {
+  flex: 0 0 auto !important;
+  margin: 0.15em 0.625rem 0 0 !important;
+  vertical-align: top !important;
+}
+
+/* Поле согласия дышит сверху и снизу, чтобы блок не лип к соседям. */
+.b24-form :is(.b24-form-field-agreement, .b24-form-field-checkbox) {
+  padding: 0.5rem 0 !important;
+}
+

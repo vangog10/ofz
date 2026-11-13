@@ -27,11 +27,19 @@ const springCine: SpringConfig = { mass: 1, tension: 55, friction: 24 };
 
 /* ---------- Reveal ---------- */
 
-const REVEAL_OFFSETS: Record<RevealDirection, { x?: string; y?: string; scale?: number }> = {
-  up: { y: "2.5rem" },
-  down: { y: "-2.5rem" },
-  left: { x: "3rem" },
-  right: { x: "-3rem" },
+/**
+ * Смещения появления блока.
+ *
+ * Только числа, без единиц: react-spring не умеет анимировать AnimatedString
+ * в AnimatedValue и падает с «Cannot animate between AnimatedString and
+ * AnimatedValue, as the "to" prop suggests», когда цель — 0 (см. Reveal).
+ * 40px ≈ 2.5rem, 48px ≈ 3rem при базовом размере шрифта.
+ */
+const REVEAL_OFFSETS: Record<RevealDirection, { x?: number; y?: number; scale?: number }> = {
+  up: { y: 40 },
+  down: { y: -40 },
+  left: { x: 48 },
+  right: { x: -48 },
   none: {},
   zoom: { scale: 0.96 },
 };
